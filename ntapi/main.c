@@ -10,6 +10,8 @@
 #define g(msg, ...) printf("[+] " msg "\n", ##__VA_ARGS__)
 #define e(msg, ...) printf("[-] " msg "\n", ##__VA_ARGS__)
 #define i(msg, ...) printf("[i] " msg "\n", ##__VA_ARGS__)
+#define STATUS_SUCCESS 0x00000000
+#define THREAD_ALL_ACCESS (STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | SPECIFIC_RIGHTS_ALL)
 
 size_t GetModHandle(wchar_t *ln) {
 	PEB* pPeb = (PEB*)__readgsqword(0x60);
@@ -76,15 +78,28 @@ size_t GetFuncAddr(size_t modb, char* fn) {
 
 
 int main(int argc, char** argv, char* envp) {
-	size_t kernelBase = GetModHandle(L"C:\\WINDOWS\\System32\\ntdll.dll");
-	g(" GetModHandle(ntdll.dll) = % p\n", kernelBase);
+	size_t kb = GetModHandle(L"C:\\WINDOWS\\System32\\ntdll.dll");
+	g(" GetModHandle(ntdll.dll) = % p\n", kb);
 
-	size_t ptrNtOpenThread = (size_t)GetFuncAddr(L"")
-	size_t ptr_NtSuspendThreat =
-	size_t ptr_NtGetContextThread =
-	size_t ptr_AllocateVirtualMemory =
-	size_t ptr_NtWriteVirtualMemory =
+	size_t ptr_NtOpenThread = (size_t)GetFuncAddr(kb,L"NtOpenThread");
+	size_t ptr_NtSuspendThreat = (size_t)GetFuncAddr(kb,L"NtOpenThread");
+	size_t ptr_NtGetContextThread = (size_t)GetFuncAddr(kb,L"NtOpenThread");
+	size_t ptr_AllocateVirtualMemory = (size_t)GetFuncAddr(kb,L"NtOpenThread");
+	size_t ptr_NtWriteVirtualMemory = (size_t)GetFuncAddr(kb,L"NtOpenThread");
 
+
+
+	NTSTATUS status;
+
+	STARTUPINFO si;
+	HANDLE hThread;
+	HANDLE hProc;
+	OBJECT_ATTRIBUTES oa;
+
+
+
+
+	status = ((NTSTATUS(NTAPI*)(HANDLE, ACCESS_MASK, POBJECT_ATTRIBUTES, ULONG))ptr_NtOpenThread)(hThread, THREAD_ALL_ACCESS, &oa ,0);
 
 
 	return 0;
