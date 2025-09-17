@@ -82,7 +82,7 @@ int main(int argc, char** argv, char* envp) {
 	g(" GetModHandle(ntdll.dll) = % p\n", kb);
 
 	size_t ptr_NtOpenThread = (size_t)GetFuncAddr(kb,L"NtOpenThread");
-	size_t ptr_NtSuspendThreat = (size_t)GetFuncAddr(kb,L"NtOpenThread");
+	size_t ptr_NtSuspendThread = (size_t)GetFuncAddr(kb,L"NtOpenThread");
 	size_t ptr_NtGetContextThread = (size_t)GetFuncAddr(kb,L"NtOpenThread");
 	size_t ptr_AllocateVirtualMemory = (size_t)GetFuncAddr(kb,L"NtOpenThread");
 	size_t ptr_NtWriteVirtualMemory = (size_t)GetFuncAddr(kb,L"NtOpenThread");
@@ -100,6 +100,7 @@ int main(int argc, char** argv, char* envp) {
 
 
 	status = ((NTSTATUS(NTAPI*)(HANDLE, ACCESS_MASK, POBJECT_ATTRIBUTES, ULONG))ptr_NtOpenThread)(hThread, THREAD_ALL_ACCESS, &oa ,0);
+	status = ((NTSTATUS(NTAPI*)(HANDLE, ACCESS_MASK, POBJECT_ATTRIBUTES, ULONG))ptr_NtSuspendThread)(hThread, THREAD_ALL_ACCESS, &oa ,0);
 
 
 	return 0;

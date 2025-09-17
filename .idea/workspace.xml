@@ -23,7 +23,7 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="09cfcf62-cd8e-4f62-a1b8-2da894f237f6" name="Changes" comment="">
+    <list default="true" id="09cfcf62-cd8e-4f62-a1b8-2da894f237f6" name="Changes" comment="UNRULY">
       <change beforePath="$PROJECT_DIR$/ntapi/main.c" beforeDir="false" afterPath="$PROJECT_DIR$/ntapi/main.c" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -96,11 +96,24 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1758048135237</updated>
-      <workItem from="1758048137547" duration="2284000" />
+      <workItem from="1758048137547" duration="3130000" />
     </task>
+    <task id="LOCAL-00001" summary="UNRULY">
+      <option name="closed" value="true" />
+      <created>1758052171668</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1758052171668</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="UNRULY" />
+    <option name="LAST_COMMIT_MESSAGE" value="UNRULY" />
   </component>
 </project>
