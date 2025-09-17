@@ -7,4 +7,5 @@ add_executable(THREAD_EXE_HIJACK ntapi/main.c
         direct/main.c
         indirect/main.c
         winapi/main.c
-        ntapi/main.h)
+        ntapi/main.h
+        iathook/main.c)

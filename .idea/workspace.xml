@@ -24,6 +24,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="09cfcf62-cd8e-4f62-a1b8-2da894f237f6" name="Changes" comment="UNRULY">
+      <change afterPath="$PROJECT_DIR$/iathook/main.c" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/iathook/main.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ntapi/main.c" beforeDir="false" afterPath="$PROJECT_DIR$/ntapi/main.c" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -69,6 +73,7 @@
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
     "git-widget-placeholder": "master",
+    "last_opened_file_path": "C:/Users/fallon/CLionProjects/thread_hijack_rp/iathook",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -77,6 +82,11 @@
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\fallon\CLionProjects\thread_hijack_rp\iathook" />
+    </key>
+  </component>
   <component name="RunManager">
     <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true">
       <method v="2">
@@ -96,7 +106,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1758048135237</updated>
-      <workItem from="1758048137547" duration="3130000" />
+      <workItem from="1758048137547" duration="6179000" />
     </task>
     <task id="LOCAL-00001" summary="UNRULY">
       <option name="closed" value="true" />
@@ -106,7 +116,15 @@
       <option name="project" value="LOCAL" />
       <updated>1758052171668</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="UNRULY">
+      <option name="closed" value="true" />
+      <created>1758068896114</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1758068896114</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
