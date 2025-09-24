@@ -1,9 +1,4 @@
 #include <stdio.h>
-#include <windows.h>
-#include <winternl.h>
-#include <winnt.h>
-#include <intrin.h>
-#include <shlwapi.h>
 #include "main.h"
 
 
