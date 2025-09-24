@@ -7,6 +7,8 @@
 #endif //MAIN_H
 
 
+#define RTL_MAX_DRIVE_LETTERS 32
+
 
 
 typedef struct _UNICODE_STRING {
@@ -29,6 +31,16 @@ typedef struct _RTL_DRIVE_LETTER_CURDIR {
 
 
 } RTL_DRIVE_LETTER_CURDIR, *PRTL_DRIVE_LETTER_CURDIR;
+
+typedef _Function_class_(PS_POST_PROCESS_INIT_ROUTINE)
+VOID NTAPI PS_POST_PROCESS_INIT_ROUTINE(
+    VOID
+    );
+
+typedef PS_POST_PROCESS_INIT_ROUTINE* PPS_POST_PROCESS_INIT_ROUTINE;
+
+
+
 
 typedef struct _CURDIR
 {
@@ -89,19 +101,6 @@ typedef struct _RTL_USER_PROCESS_PARAMETERS
 
 
 
-typedef struct _RTL_DRIVE_LETTER_CURDIR {
-
-
-
-
-    USHORT                  Flags;
-    USHORT                  Length;
-    ULONG                   TimeStamp;
-    UNICODE_STRING          DosPath;
-
-
-
-} RTL_DRIVE_LETTER_CURDIR, *PRTL_DRIVE_LETTER_CURDIR;
 typedef struct _PEB_LDR_DATA {
     ULONG Length;
     UCHAR Initialized;
