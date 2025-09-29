@@ -25,7 +25,7 @@
   <component name="ChangeListManager">
     <list default="true" id="09cfcf62-cd8e-4f62-a1b8-2da894f237f6" name="Changes" comment="UNRULY">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ntapi/main.h" beforeDir="false" afterPath="$PROJECT_DIR$/ntapi/main.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ntapi/main.c" beforeDir="false" afterPath="$PROJECT_DIR$/ntapi/main.c" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -61,6 +61,7 @@
   </component>
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
+    &quot;CMake Application.THREAD_EXE_HIJACK.executor&quot;: &quot;Run&quot;,
     &quot;RunOnceActivity.RadMigrateCodeStyle&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
@@ -100,6 +101,9 @@
       <updated>1758048135237</updated>
       <workItem from="1758048137547" duration="17114000" />
       <workItem from="1758729295821" duration="1952000" />
+      <workItem from="1758735043613" duration="12053000" />
+      <workItem from="1759181072922" duration="444000" />
+      <workItem from="1759181679329" duration="14000" />
     </task>
     <task id="LOCAL-00001" summary="UNRULY">
       <option name="closed" value="true" />
@@ -165,11 +169,56 @@
       <option name="project" value="LOCAL" />
       <updated>1758730647218</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="UNRULY">
+      <option name="closed" value="true" />
+      <created>1758740183113</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1758740183113</updated>
+    </task>
+    <task id="LOCAL-00010" summary="UNRULY">
+      <option name="closed" value="true" />
+      <created>1758749662059</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1758749662059</updated>
+    </task>
+    <task id="LOCAL-00011" summary="UNRULY">
+      <option name="closed" value="true" />
+      <created>1758751033576</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1758751033576</updated>
+    </task>
+    <task id="LOCAL-00012" summary="UNRULY">
+      <option name="closed" value="true" />
+      <created>1758763078357</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1758763078357</updated>
+    </task>
+    <task id="LOCAL-00013" summary="UNRULY">
+      <option name="closed" value="true" />
+      <created>1759166306873</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1759166306873</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="VCPKGProject">
+    <isAutomaticCheckingOnLaunch value="false" />
+    <isAutomaticFoundErrors value="true" />
+    <isAutomaticReloadCMake value="true" />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="UNRULY" />
