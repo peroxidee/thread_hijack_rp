@@ -190,8 +190,7 @@ typedef struct _OBJECT_ATTRIBUTES
 } OBJECT_ATTRIBUTES, *POBJECT_ATTRIBUTES;
 
 
-
 PCWSTR StrStrIW(
-  [in] PCWSTR pszFirst,
-  [in] PCWSTR pszSrch
+   _In_ PCWSTR pszFirst,
+  _In_ PCWSTR pszSrch
 );
