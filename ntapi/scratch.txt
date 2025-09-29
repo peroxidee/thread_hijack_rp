@@ -210,3 +210,7 @@ mingw32-make[3]: *** [CMakeFiles\THREAD_EXE_HIJACK.dir\build.make:78: CMakeFiles
 mingw32-make[2]: *** [CMakeFiles\Makefile2:86: CMakeFiles/THREAD_EXE_HIJACK.dir/all] Error 2
 mingw32-make[1]: *** [CMakeFiles\Makefile2:93: CMakeFiles/THREAD_EXE_HIJACK.dir/rule] Error 2
 mingw32-make: *** [Makefile:130: THREAD_EXE_HIJACK] Error 2
+
+	status = ((NTSTATUS(NTAPI*)(HANDLE, PVOID, ULONG_PTR, PSIZE_T, ULONG, ULONG))ptr_NtAllocateVirtualMemory)(hThread, &buf, n, usize,MEM_COMMIT,PAGE_READWRITE);
+
+	status = ((NTSTATUS(NTAPI*)(HANDLE, PVOID, PVOID, SIZE_T, PSIZE_T))ptr_NtWriteVirtualMemory)(hThread, NULL, &buf, sizeof(buf), NULL);
