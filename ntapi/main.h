@@ -101,6 +101,12 @@ typedef struct _RTL_USER_PROCESS_PARAMETERS
 
 
 
+typedef struct _CLIENT_ID
+{
+    HANDLE UniqueProcess;
+    HANDLE UniqueThread;
+} CLIENT_ID, * PCLIENT_ID;
+
 typedef struct _PEB_LDR_DATA {
     ULONG Length;
     UCHAR Initialized;
@@ -110,7 +116,6 @@ typedef struct _PEB_LDR_DATA {
     LIST_ENTRY InInitializationOrderModuleList;
     PVOID EntryInProgress;
 } PEB_LDR_DATA, *PPEB_LDR_DATA;
-
 
 
 typedef struct _PEB {

