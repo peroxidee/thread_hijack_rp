@@ -199,3 +199,12 @@ PCWSTR StrStrIW(
    _In_ PCWSTR pszFirst,
   _In_ PCWSTR pszSrch
 );
+
+#define InitializeObjectAttributes(p, n, a, r, s) { \
+    (p)->Length = sizeof(OBJECT_ATTRIBUTES); \
+    (p)->RootDirectory = r; \
+    (p)->Attributes = a; \
+    (p)->ObjectName = n; \
+    (p)->SecurityDescriptor = s; \
+    (p)->SecurityQualityOfService = NULL; \
+    }

