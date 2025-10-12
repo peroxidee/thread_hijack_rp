@@ -98,7 +98,7 @@
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "ntapi/main.c",
+			"path" : "direct/main.c",
 			"sourceGroupIndex" : 0
 		}
 	],

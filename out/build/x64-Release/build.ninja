@@ -49,10 +49,10 @@ cmake_ninja_workdir = C$:\Users\djkri\source\repos\thread_hijack_rp\out\build\x6
 
 build cmake_object_order_depends_target_THREAD_EXE_HIJACK: phony || .
 
-build CMakeFiles\THREAD_EXE_HIJACK.dir\ntapi\main.c.obj: C_COMPILER__THREAD_EXE_HIJACK_unscanned_Release C$:\Users\djkri\source\repos\thread_hijack_rp\ntapi\main.c || cmake_object_order_depends_target_THREAD_EXE_HIJACK
+build CMakeFiles\THREAD_EXE_HIJACK.dir\direct\main.c.obj: C_COMPILER__THREAD_EXE_HIJACK_unscanned_Release C$:\Users\djkri\source\repos\thread_hijack_rp\direct\main.c || cmake_object_order_depends_target_THREAD_EXE_HIJACK
   FLAGS = /DWIN32 /D_WINDOWS /O2 /Ob2 /DNDEBUG -std:c11 -MD
   OBJECT_DIR = CMakeFiles\THREAD_EXE_HIJACK.dir
-  OBJECT_FILE_DIR = CMakeFiles\THREAD_EXE_HIJACK.dir\ntapi
+  OBJECT_FILE_DIR = CMakeFiles\THREAD_EXE_HIJACK.dir\direct
   TARGET_COMPILE_PDB = CMakeFiles\THREAD_EXE_HIJACK.dir\
   TARGET_PDB = THREAD_EXE_HIJACK.pdb
 
@@ -64,7 +64,7 @@ build CMakeFiles\THREAD_EXE_HIJACK.dir\ntapi\main.c.obj: C_COMPILER__THREAD_EXE_
 #############################################
 # Link the executable THREAD_EXE_HIJACK.exe
 
-build THREAD_EXE_HIJACK.exe: C_EXECUTABLE_LINKER__THREAD_EXE_HIJACK_Release CMakeFiles\THREAD_EXE_HIJACK.dir\ntapi\main.c.obj
+build THREAD_EXE_HIJACK.exe: C_EXECUTABLE_LINKER__THREAD_EXE_HIJACK_Release CMakeFiles\THREAD_EXE_HIJACK.dir\direct\main.c.obj
   FLAGS = /DWIN32 /D_WINDOWS /O2 /Ob2 /DNDEBUG -MD
   LINK_FLAGS = /machine:x64 /INCREMENTAL:NO /subsystem:console
   LINK_LIBRARIES = kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib

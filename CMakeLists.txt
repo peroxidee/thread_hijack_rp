@@ -4,4 +4,4 @@ project(THREAD_EXE_HIJACK C)
 set(CMAKE_C_STANDARD 11)
 
 
-add_executable(THREAD_EXE_HIJACK ntapi/main.c)
+add_executable(THREAD_EXE_HIJACK direct/main.c)

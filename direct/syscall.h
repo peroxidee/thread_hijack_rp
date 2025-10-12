@@ -1,8 +1,17 @@
 #ifndef _SYSCALLS_H
 #define _SYSCALLS_H
 
-
+#include "main.h"
 #include <windows.h>
+
+DWORD wrdNtSuspendThread;
+DWORD wrdNtAllocateVirtualMemory;
+DWORD wrdNtWriteVirtualMemory;
+DWORD wrdNtOpenThread;
+DWORD wrdNtOpenProcess;
+DWORD wrdNtGetContextThread;
+DWORD wrdNtSetContextThread;
+DWORD wrdNtResumeThread;
 
 
 
@@ -11,7 +20,7 @@ extern "C" {
 #endif
 
 typedef long NTSTATUS;
-typedef NTSTATUS* PNTSTATUS
+typedef NTSTATUS* PNTSTATUS;
 
 extern NTSTATUS NtAllocateVirtualMemory(
     HANDLE ProcessHandle,    
