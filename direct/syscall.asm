@@ -13,7 +13,7 @@ EXTERN wrdNtOpenThread:DWORD
 .CODE;
 
 
-
+;
 
 NtWriteVirtualMemory PROC
     mov r10, rcx
@@ -22,20 +22,22 @@ NtWriteVirtualMemory PROC
     ret
 NtWriteVirtualMemory ENDP
 
+
+;
 NtOpenProcess PROC
     mov r10, rcx
     mov eax, wrdNtOpenProcess
     syscall
     ret
 NtOpenProcess ENDP
-
+;
 NtOpenThread PROC
     mov r10, rcx
     mov eax, wrdNtOpenThread
     syscall
     ret
 NtOpenThread ENDP
-
+;
 
 NtGetContextThread PROC
     mov r10, rcx
@@ -43,31 +45,33 @@ NtGetContextThread PROC
     syscall
     ret
 NtGetContextThread ENDP
-
+;
 NtSetContextThread PROC
     mov r10, rcx
     mov eax, wrdNtSetContextThread
     syscall
     ret
 NtSetContextThread ENDP
-
+;
 NtResumeThread PROC
     mov r10, rcx
     mov eax, wrdNtResumeThread
     syscall
     ret
 NtResumeThread ENDP
-
+;
 NtSuspendThread PROC
     mov r10, rcx
     mov eax, wrdNtSuspendThread
     syscall
     ret
 NtSuspendThread ENDP
-
+;
 NtAllocateVirtualMemory PROC
     mov r10, rcx
     mov eax, wrdNtAllocateVirtualMemory
     syscall
     ret
 NtAllocateVirtualMemory ENDP
+
+END;

