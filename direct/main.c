@@ -117,6 +117,11 @@ size_t GetModHandle(wchar_t* ln) {
 
 DWORD GetFuncAddr(size_t modb, char* fn) {
 
+
+
+	
+	
+
 	int nindex = 0;
 	int cnt = 0;
 	PIMAGE_DOS_HEADER dosHdr = (PIMAGE_DOS_HEADER)(modb);
@@ -179,8 +184,12 @@ DWORD GetFuncAddr(size_t modb, char* fn) {
 
 
 		if (name[0] == 'N' && name[1] == 't') {
-
-			//i("assigning function %s to index %d", name, i);
+			//g("Found function %s at ordinal index %d", name, ordinalIndex);
+			//size_t funcAddr = modb + arrf[ordinalIndex];
+			//g("Function address: 0x%p", funcAddr);
+			// unsigned char* stubBytes[] = { 0x4C,  0x8B, 0xD1, 0xB8 };
+			//DWORD ssn = (unsigned char*)(funcAddr + 4)[0]
+			
 			ptr[nindex] = name;
 			nindex++;
 			if (ptr == NULL) {
@@ -193,49 +202,22 @@ DWORD GetFuncAddr(size_t modb, char* fn) {
 			break;
 		}
 
-
+		
 
 
 
 	}
 
 
+	
 
-	i("number of nt functions: %d\n", nindex);
-	i("getting n values\n");
-	i("size of ptr is %d\n", sizeof(ptr));
 	int n = sizeof(ptr) / sizeof(ptr[0]);
-	//i("sorting array of size %d\n", n);
-
 	qsort(ptr, n, sizeof(ptr), sort);
 
-	for (size_t m = 0; m < sizeof(ptr); m++) {
-		if (ptr == NULL) {
-			i("pointer is null, breaking");
-			break;
-		}
-		i("value at index %d is %s\n", m, ptr[m]);
-		if (ptr == NULL) {
-			i("pointer is null, breaking");
-			break;
-		}
-	}
-
-	i("sorted array\n");
 	for (size_t j = 0; j < sizeof(ptr);j++) {
-		//i("accessing array at index %d\n", j);
-		//i("checking function %s at index %d", ptr[j], j);
 
 		i("comparing to %s\n", fn);
-		if (ptr == NULL) {
-			i("pointer is null, breaking");
-			break;
-		}
-		i("value at index %d is %s\n", j, ptr[j]);
-		if (ptr == NULL) {
-			i("pointer is null, breaking");
-			break;
-		}
+
 		if (ptr[j] == fn) {
 			i("ssn is %d", j + 4);
 			return((DWORD)j+4);
