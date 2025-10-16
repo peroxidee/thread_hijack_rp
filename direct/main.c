@@ -122,6 +122,8 @@ DWORD GetFuncAddr(size_t modb, char* fn) {
 	
 	
 
+=========
+>>>>>>>>> Temporary merge branch 2
 	int nindex = 0;
 	int cnt = 0;
 	PIMAGE_DOS_HEADER dosHdr = (PIMAGE_DOS_HEADER)(modb);
@@ -209,8 +211,10 @@ DWORD GetFuncAddr(size_t modb, char* fn) {
 	}
 
 
-	
 
+	i("number of nt functions: %d\n", nindex);
+	i("getting n values\n");
+	i("size of ptr is %d\n", sizeof(ptr));
 	int n = sizeof(ptr) / sizeof(ptr[0]);
 	qsort(ptr, n, sizeof(ptr), sort);
 
