@@ -1,8 +1,8 @@
-# Install script for directory: C:/Users/paracelsus/source/repos/thread_hijack_rp
+# Install script for directory: C:/Users/djkri/source/repos/thread_hijack_rp
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "C:/Users/paracelsus/Source/Repos/thread_hijack_rp/out/install/x64-Debug")
+  set(CMAKE_INSTALL_PREFIX "C:/Users/djkri/Source/Repos/thread_hijack_rp/out/install/x64-Debug")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -32,10 +32,15 @@ if(NOT DEFINED CMAKE_CROSSCOMPILING)
   set(CMAKE_CROSSCOMPILING "FALSE")
 endif()
 
+# Set path to fallback-tool for dependency-resolution.
+if(NOT DEFINED CMAKE_OBJDUMP)
+  set(CMAKE_OBJDUMP "CMAKE_OBJDUMP-NOTFOUND")
+endif()
+
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
 if(CMAKE_INSTALL_LOCAL_ONLY)
-  file(WRITE "C:/Users/paracelsus/source/repos/thread_hijack_rp/out/build/x64-Debug/install_local_manifest.txt"
+  file(WRITE "C:/Users/djkri/source/repos/thread_hijack_rp/out/build/x64-Debug/install_local_manifest.txt"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
 endif()
 if(CMAKE_INSTALL_COMPONENT)
@@ -51,6 +56,6 @@ else()
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
-  file(WRITE "C:/Users/paracelsus/source/repos/thread_hijack_rp/out/build/x64-Debug/${CMAKE_INSTALL_MANIFEST}"
+  file(WRITE "C:/Users/djkri/source/repos/thread_hijack_rp/out/build/x64-Debug/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
 endif()

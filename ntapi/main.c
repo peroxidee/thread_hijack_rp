@@ -131,6 +131,8 @@ size_t GetFuncAddr(size_t modb, char* fn) {
 
 		WORD ordinalIndex = arrno[i];
 		i("Checking function: %s (ordinal index: %d)", name, ordinalIndex);
+		
+		
 		if (!stricmp(name, fn)) {
 			g("Found function %s at ordinal index %d", name, ordinalIndex);
 			size_t funcAddr = modb + arrf[ordinalIndex];
