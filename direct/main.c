@@ -117,13 +117,8 @@ size_t GetModHandle(wchar_t* ln) {
 
 DWORD GetFuncAddr(size_t modb, char* fn) {
 
-
-
-	char* ptr;
-
-	ptr = (char*)malloc(sizeof(char));
-
 	int nindex = 0;
+	int cnt = 0;
 	PIMAGE_DOS_HEADER dosHdr = (PIMAGE_DOS_HEADER)(modb);
 	PIMAGE_NT_HEADERS ntHdr = (PIMAGE_NT_HEADERS)(modb + dosHdr->e_lfanew);
 	IMAGE_OPTIONAL_HEADER opH = ntHdr->OptionalHeader;
@@ -136,42 +131,119 @@ DWORD GetFuncAddr(size_t modb, char* fn) {
 	DWORD* arrn = (DWORD*)(modb + exportTable->AddressOfNames);
 	WORD* arrno = (WORD*)(modb + exportTable->AddressOfNameOrdinals);
 
-	for (size_t i = 0; i < exportTable->NumberOfNames; i++) {
-		char* name = (char*)(modb + arrn[i]);
+	for (size_t k = 0; k < exportTable->NumberOfNames; k++) {
+		char* name = (char*)(modb + arrn[k]);
 
-		WORD ordinalIndex = arrno[i];
-		i("Checking function: %s (ordinal index: %d)", name, ordinalIndex);
-
-
-
+		WORD ordinalIndex = arrno[k];
+	
 
 		if (name[0] == 'N' && name[1] == 't') {
-			//g("Found function %s at ordinal index %d", name, ordinalIndex);
-			//size_t funcAddr = modb + arrf[ordinalIndex];
-			//g("Function address: 0x%p", funcAddr);
-			// unsigned char* stubBytes[] = { 0x4C,  0x8B, 0xD1, 0xB8 };
-			//DWORD ssn = (unsigned char*)(funcAddr + 4)[0]
 			
-			ptr[nindex] = name;
-			nindex++;
-
+			cnt++;
 		}
-
 		
+		else if (name[0] == 'P' && name[1] == 'f' && name[2] == 'x') {
+
+			break;
+		}
+			
+
+		i("cnt is %d\n", cnt);
 
 
 	}
 
+
+	char* ptr;
+
+	i("dynamically allocating for ptr length of %d", cnt * sizeof(char*));
+
+	ptr = (char*)malloc(cnt*sizeof(char*));
+	i("size of ptr is %d\n", sizeof(ptr));
+
+	i("allocated memory for %d names\n", cnt);
+	i("pointer address is %p\n", ptr);
+
+	
+	for (size_t i = 0; i < exportTable->NumberOfNames; i++) {
+		char* name = (char*)(modb + arrn[i]);
+
+		WORD ordinalIndex = arrno[i];
+		//i("Checking function: %s (ordinal index: %d)", name, ordinalIndex);
+
+		if (!stricmp(name, fn)) {
+			g("Found function %s at ordinal index %d", name, ordinalIndex);
+			size_t funcAddr = modb + arrf[ordinalIndex];
+			g("Function address: 0x%p", funcAddr);
+		}
+
+
+		if (name[0] == 'N' && name[1] == 't') {
+
+			//i("assigning function %s to index %d", name, i);
+			ptr[nindex] = name;
+			nindex++;
+			if (ptr == NULL) {
+				i("pointer is null, breaking");
+				break;
+			}
+		}
+		else if (name[0] == 'P' && name[1] == 'f' && name[2] == 'x') {
+
+			break;
+		}
+
+
+
+
+
+	}
+
+
+
+	i("number of nt functions: %d\n", nindex);
+	i("getting n values\n");
+	i("size of ptr is %d\n", sizeof(ptr));
 	int n = sizeof(ptr) / sizeof(ptr[0]);
+	//i("sorting array of size %d\n", n);
+
 	qsort(ptr, n, sizeof(ptr), sort);
 
+	for (size_t m = 0; m < sizeof(ptr); m++) {
+		if (ptr == NULL) {
+			i("pointer is null, breaking");
+			break;
+		}
+		i("value at index %d is %s\n", m, ptr[m]);
+		if (ptr == NULL) {
+			i("pointer is null, breaking");
+			break;
+		}
+	}
+
+	i("sorted array\n");
 	for (size_t j = 0; j < sizeof(ptr);j++) {
+		//i("accessing array at index %d\n", j);
+		//i("checking function %s at index %d", ptr[j], j);
 
-
+		i("comparing to %s\n", fn);
+		if (ptr == NULL) {
+			i("pointer is null, breaking");
+			break;
+		}
+		i("value at index %d is %s\n", j, ptr[j]);
+		if (ptr == NULL) {
+			i("pointer is null, breaking");
+			break;
+		}
 		if (ptr[j] == fn) {
 			i("ssn is %d", j + 4);
 			return((DWORD)j+4);
 		}
+		else{
+			e("not a match");
+		}
+		
 	}
 	
 

@@ -1,7 +1,7 @@
 #ifndef _SYSCALLS_H
 #define _SYSCALLS_H
-
-
+#include <windows.h>
+#include "main.h"
 
 DWORD wrdNtSuspendThread;
 DWORD wrdNtAllocateVirtualMemory;
@@ -44,10 +44,10 @@ extern NTSTATUS NtWriteVirtualMemory(
 );
 
 extern NTSTATUS NtOpenThread(
-	PHANDLE ThreadHandle,
-	ACCESS_MASK DesiredAccess,
-	POBJECT_ATTRIBUTES ObjectAttributes,
-	PCLIENT_ID ClientId
+    PHANDLE ThreadHandle,
+    ACCESS_MASK DesiredAccess,
+    POBJECT_ATTRIBUTES ObjectAttributes,
+    PCLIENT_ID ClientId
 
 );
 
