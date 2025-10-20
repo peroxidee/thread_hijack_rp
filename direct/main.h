@@ -118,6 +118,8 @@ typedef struct _PEB_LDR_DATA {
 } PEB_LDR_DATA, *PPEB_LDR_DATA;
 
 
+
+
 typedef struct _PEB {
     BYTE                          Reserved1[2];
     BYTE                          BeingDebugged;
