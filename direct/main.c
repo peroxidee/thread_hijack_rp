@@ -136,7 +136,7 @@ DWORD GetFuncAddr(size_t modb, char* fn) {
 			g("Found function %s at ordinal index %d", name, ordinalIndex);
 			size_t funcAddr = modb + arrf[ordinalIndex];
 			g("Function address: 0x%p", funcAddr);
-			return ((unsigned char*)(funcAddr + 4))[0];
+			return ((DWORD*)(unsigned char*)(funcAddr + 4))[0];
 		}
 
 	}
