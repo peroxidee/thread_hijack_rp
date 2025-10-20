@@ -163,7 +163,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "c:/Users/djkri/source/repos/thread_hijack_rp/out/build/x64-Release"
+			"value" : "c:/Users/paracelsus/source/repos/thread_hijack_rp/out/build/x64-Release"
 		},
 		{
 			"name" : "CMAKE_CACHE_MAJOR_VERSION",
@@ -523,7 +523,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "C:/Users/djkri/source/repos/thread_hijack_rp/out/build/x64-Release/CMakeFiles/pkgRedirects"
+			"value" : "C:/Users/paracelsus/source/repos/thread_hijack_rp/out/build/x64-Release/CMakeFiles/pkgRedirects"
 		},
 		{
 			"name" : "CMAKE_GENERATOR",
@@ -583,7 +583,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "C:/Users/djkri/source/repos/thread_hijack_rp"
+			"value" : "C:/Users/paracelsus/source/repos/thread_hijack_rp"
 		},
 		{
 			"name" : "CMAKE_INSTALL_PREFIX",
@@ -595,7 +595,7 @@
 				}
 			],
 			"type" : "PATH",
-			"value" : "C:/Users/djkri/Source/Repos/thread_hijack_rp/out/install/x64-Release"
+			"value" : "C:/Users/paracelsus/Source/Repos/thread_hijack_rp/out/install/x64-Release"
 		},
 		{
 			"name" : "CMAKE_LINKER",
@@ -1215,7 +1215,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "C:/Users/djkri/source/repos/thread_hijack_rp/out/build/x64-Release"
+			"value" : "C:/Users/paracelsus/source/repos/thread_hijack_rp/out/build/x64-Release"
 		},
 		{
 			"name" : "THREAD_EXE_HIJACK_IS_TOP_LEVEL",
@@ -1239,7 +1239,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "C:/Users/djkri/source/repos/thread_hijack_rp"
+			"value" : "C:/Users/paracelsus/source/repos/thread_hijack_rp"
 		}
 	],
 	"kind" : "cache",
