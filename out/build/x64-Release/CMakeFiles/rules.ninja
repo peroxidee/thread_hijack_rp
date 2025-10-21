@@ -18,16 +18,6 @@ msvc_deps_prefix = Note: including file:
 
 
 #############################################
-# Rule for compiling ASM_MASM files.
-
-rule ASM_MASM_COMPILER__THREAD_EXE_HIJACK_unscanned_Release
-  depfile = $DEP_FILE
-  deps = gcc
-  command = ${LAUNCHER}${CODE_CHECK}C:\PROGRA~1\MICROS~1\2022\COMMUN~1\VC\Tools\MSVC\1444~1.352\bin\Hostx64\x64\ml64.exe $DEFINES $INCLUDES $FLAGS -c -Fo $out $in
-  description = Building ASM_MASM object $out
-
-
-#############################################
 # Rule for compiling C files.
 
 rule C_COMPILER__THREAD_EXE_HIJACK_unscanned_Release
