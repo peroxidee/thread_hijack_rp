@@ -1,0 +1,8 @@
+ if (!hThread || !pStartAddress) {
+		e(" hthread and start addr are not valid\n");
+		return 1;
+       }
+        else {
+			g("hthread and start addr are valid\n");
+        }
+            
