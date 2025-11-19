@@ -120,9 +120,6 @@ size_t GetModHandle(wchar_t* ln) {
 
 
 
-
-
-
 NtFunction GetFuncAddr(size_t modb, char* fn) {
 
 	PIMAGE_DOS_HEADER dosHdr = (PIMAGE_DOS_HEADER)(modb);
@@ -206,11 +203,15 @@ int main(int argc, char* argv[]) {
 	wrdNtWriteVirtualMemory = (DWORD)NtWriteVirtualMemoryFunc.ssn;
 	wrdNtSetContextThread = (DWORD)NtSetContextThreadFunc.ssn;
 	wrdNtResumeThread = (DWORD)NtResumeThreadFunc.ssn;
+	
 	sysNtAllocateVirtualMemory = NtAllocateVirtualMemoryFunc.sysaddr;
 	sysNtWriteVirtualMemory = NtWriteVirtualMemoryFunc.sysaddr;
-	 
-
-
+	sysNtSetContextThread = NtSetContextThreadFunc.sysaddr;
+	sysNtResumeThread = NtResumeThreadFunc.sysaddr;
+	sysNtOpenThread = NtOpenThreadFunc.sysaddr;
+	sysNtOpenProcess = NtOpenProcessFunc.sysaddr;
+	sysNtSuspendThread = NtSuspendThreadFunc.sysaddr;
+	sysNtGetContextThread = NtGetContextThreadFunc.sysaddr;
 
 	NTSTATUS status;
 
@@ -244,7 +245,7 @@ int main(int argc, char* argv[]) {
 
 
 
-	i("\npassing in:\n - handle:0x%x\n - mask: 0x%x\n - object attributes: 0x%p\n - cid: 0x%p\n", &hProc, PROCESS_ALL_ACCESS, &oa, &cid_proc);
+	i("starting to open process");
 
 	status = NtOpenProcess(&hProc, PROCESS_ALL_ACCESS, &oa, &cid_proc);
 

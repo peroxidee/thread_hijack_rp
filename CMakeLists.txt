@@ -4,5 +4,5 @@ project(THREAD_EXE_HIJACK C)
 set(CMAKE_C_STANDARD 11)
 
 
-add_executable(THREAD_EXE_HIJACK winapi/main.c)
+add_executable(THREAD_EXE_HIJACK indirect/main.c indirect/syscall.asm)
 enable_language(C ASM_MASM)
